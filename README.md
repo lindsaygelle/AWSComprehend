@@ -1,4 +1,4 @@
-# AWS Comprehend Text Analysis and Data Exposure
+# AWS Comprehend
 This project provides an event-driven architecture for analyzing user-submitted text using AWS Comprehend and exposing the processed data through a RESTful API gateway.
 Users can submit a block of text, and the system will store the raw text in S3, process it using AWS Comprehend, store the analyzed data in DynamoDB,
 and then expose the data sets through the provided API Gateway endpoints.
