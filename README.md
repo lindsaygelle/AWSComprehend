@@ -14,7 +14,7 @@ If you encounter any bugs or have feature requests, please open a new issue on t
 including steps to reproduce the problem, expected behavior, and any relevant logs or error messages.
 
 ## Contributing Code
-If you would like to contribute code changes, please follow these steps:
+If you would like to contribute code changes, please follow these _basic steps_:
 
 - Fork the repository on GitHub.
 - Create a new branch for your changes.
@@ -22,7 +22,7 @@ If you would like to contribute code changes, please follow these steps:
 - Push your changes to your forked repository.
 - Create a pull request in the main repository, describing your changes in detail.
 
-Please ensure that your code adheres to the project's coding standards and conventions. Additionally, make sure to include tests for any new functionality or bug fixes.
+Please ensure that your code adheres to the project's [coding standards and conventions](./CONTRIBUTING.md). Additionally, make sure to include tests for any new functionality or bug fixes.
 
 ## Guidelines
 Before starting any major contribution, please open an issue first to discuss your ideas and ensure they align with the project's goals and direction.
