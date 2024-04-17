@@ -1,4 +1,4 @@
-data "aws_iam_policy_document" "sqs_queue" {
+data "aws_iam_policy_document" "sqs" {
   statement {
     actions = ["sqs:SendMessage"]
     principals {
