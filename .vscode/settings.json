@@ -1,0 +1,10 @@
+{
+    "[terraform]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2
+    },
+    "[velocity]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2
+    }
+}
