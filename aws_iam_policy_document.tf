@@ -1,20 +1,15 @@
-resource "aws_iam_policy_document" "sqs_queue" {
+data "aws_iam_policy_document" "sqs_queue" {
   statement {
-    actions   = ["sqs:SendMessage"]
-
-    condition {
-      test     = "ArnEquals"
-      values   = [aws_s3_bucket.main.arn]
-      variable = "aws:SourceArn"
-    }
-
-    effect = "Allow"
-
+    actions = ["sqs:SendMessage"]
     principals {
-      type        = "*"
-      identifiers = ["*"]
+      type        = "Service"
+      identifiers = ["s3.amazonaws.com"]
     }
-
-    resources = ["arn:aws:sqs:*:*:s3-event-notification-queue"]
+    resources = [aws_sqs_queue.s3_object_created.arn]
+    condition {
+      test     = "ArnLike"
+      variable = "aws:SourceArn"
+      values   = [aws_s3_bucket.main.arn]
+    }
   }
 }
