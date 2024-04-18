@@ -33,6 +33,6 @@ Please refer to the [CONTRIBUTING.md](./CONTRIBUTING.md) file for more detailed 
 We appreciate your contributions and look forward to working together to make this[AWS Comprehend](https://www.github.com/lindsaygelle/AWSComprehend) project even better!
 
 # License
-[AWSComprehend](https://www.github.com/lindsaygelle/AWSComprehend) is licensed under the [MIT License](https://en.wikipedia.org/wiki/MIT_License). Feel free to use, modify, and distribute the code within this repository as per the terms of the license. 
+[AWSComprehend](https://www.github.com/lindsaygelle/AWSComprehend) is licensed under the [MIT License](https://en.wikipedia.org/wiki/MIT_License). Feel free to use, modify, and distribute the code within this repository as per the terms of the license.
 
 Please see the [LICENSE](./LICENSE) file for more details.
