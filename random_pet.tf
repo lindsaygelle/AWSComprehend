@@ -1,3 +1,3 @@
 resource "random_pet" "organization" {
-  length = 8
+  length = 1
 }
