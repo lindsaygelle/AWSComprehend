@@ -13,7 +13,7 @@ resource "aws_iam_role" "example" {
 
 resource "aws_iam_role" "pipes_pipe_s3_object_created_detect_dominant_language" {
   assume_role_policy = data.aws_iam_policy_document.assume_role_pipes_pipe_s3_object_created_detect_dominant_language.json
-  name               = "pipes-pipe-s3-object-created-detect_dominant_language"
+  name               = "pipes-pipe-s3-object-created-detect-dominant-language"
   path               = "/${local.organization}/"
   tags = {
     account_arn  = data.aws_caller_identity.main.arn
@@ -26,7 +26,7 @@ resource "aws_iam_role" "pipes_pipe_s3_object_created_detect_dominant_language" 
 
 resource "aws_iam_role" "pipes_pipe_s3_object_created_detect_entities" {
   assume_role_policy = data.aws_iam_policy_document.assume_role_pipes_pipe_s3_object_created_detect_entities.json
-  name               = "pipes-pipe-s3-object-created-detect_entities"
+  name               = "pipes-pipe-s3-object-created-detect-entities"
   path               = "/${local.organization}/"
   tags = {
     account_arn  = data.aws_caller_identity.main.arn
@@ -39,7 +39,7 @@ resource "aws_iam_role" "pipes_pipe_s3_object_created_detect_entities" {
 
 resource "aws_iam_role" "pipes_pipe_s3_object_created_detect_key_phrases" {
   assume_role_policy = data.aws_iam_policy_document.assume_role_pipes_pipe_s3_object_created_detect_key_phrases.json
-  name               = "pipes-pipe-s3-object-created-detect_key_phrases"
+  name               = "pipes-pipe-s3-object-created-detect-key-phrases"
   path               = "/${local.organization}/"
   tags = {
     account_arn  = data.aws_caller_identity.main.arn
@@ -52,7 +52,7 @@ resource "aws_iam_role" "pipes_pipe_s3_object_created_detect_key_phrases" {
 
 resource "aws_iam_role" "pipes_pipe_s3_object_created_detect_pii_entities" {
   assume_role_policy = data.aws_iam_policy_document.assume_role_pipes_pipe_s3_object_created_detect_pii_entities.json
-  name               = "pipes-pipe-s3-object-created-detect_pii_entities"
+  name               = "pipes-pipe-s3-object-created-detect-pii-entities"
   path               = "/${local.organization}/"
   tags = {
     account_arn  = data.aws_caller_identity.main.arn
@@ -65,7 +65,7 @@ resource "aws_iam_role" "pipes_pipe_s3_object_created_detect_pii_entities" {
 
 resource "aws_iam_role" "pipes_pipe_s3_object_created_detect_sentiment" {
   assume_role_policy = data.aws_iam_policy_document.assume_role_pipes_pipe_s3_object_created_detect_sentiment.json
-  name               = "pipes-pipe-s3-object-created-detect_sentiment"
+  name               = "pipes-pipe-s3-object-created-detect-sentiment"
   path               = "/${local.organization}/"
   tags = {
     account_arn  = data.aws_caller_identity.main.arn
@@ -78,7 +78,7 @@ resource "aws_iam_role" "pipes_pipe_s3_object_created_detect_sentiment" {
 
 resource "aws_iam_role" "pipes_pipe_s3_object_created_detect_syntax" {
   assume_role_policy = data.aws_iam_policy_document.assume_role_pipes_pipe_s3_object_created_detect_syntax.json
-  name               = "pipes-pipe-s3-object-created-detect_syntax"
+  name               = "pipes-pipe-s3-object-created-detect-syntax"
   path               = "/${local.organization}/"
   tags = {
     account_arn  = data.aws_caller_identity.main.arn
@@ -91,7 +91,7 @@ resource "aws_iam_role" "pipes_pipe_s3_object_created_detect_syntax" {
 
 resource "aws_iam_role" "pipes_pipe_s3_object_created_detect_targeted_sentiment" {
   assume_role_policy = data.aws_iam_policy_document.assume_role_pipes_pipe_s3_object_created_detect_targeted_sentiment.json
-  name               = "pipes-pipe-s3-object-created-detect_targeted_sentiment"
+  name               = "pipes-pipe-s3-object-created-detect-targeted-sentiment"
   path               = "/${local.organization}/"
   tags = {
     account_arn  = data.aws_caller_identity.main.arn
@@ -104,7 +104,7 @@ resource "aws_iam_role" "pipes_pipe_s3_object_created_detect_targeted_sentiment"
 
 resource "aws_iam_role" "pipes_pipe_s3_object_created_detect_toxic_content" {
   assume_role_policy = data.aws_iam_policy_document.assume_role_pipes_pipe_s3_object_created_detect_toxic_content.json
-  name               = "pipes-pipe-s3-object-created-detect_toxic_content"
+  name               = "pipes-pipe-s3-object-created-detect-toxic-content"
   path               = "/${local.organization}/"
   tags = {
     account_arn  = data.aws_caller_identity.main.arn
@@ -118,6 +118,123 @@ resource "aws_iam_role" "pipes_pipe_s3_object_created_detect_toxic_content" {
 resource "aws_iam_role" "pipes_pipe_s3_object_created_text" {
   assume_role_policy = data.aws_iam_policy_document.assume_role_pipes_pipe_s3_object_created_text.json
   name               = "pipes-pipe-s3-object-created-text"
+  path               = "/${local.organization}/"
+  tags = {
+    account_arn  = data.aws_caller_identity.main.arn
+    account_id   = data.aws_caller_identity.main.account_id
+    organization = local.organization
+    region       = data.aws_region.main.name
+    workspace    = terraform.workspace
+  }
+}
+
+resource "aws_iam_role" "sfn_state_machine_comprehend_detect_dominant_language" {
+  assume_role_policy = data.aws_iam_policy_document.assume_role_sfn_state_machine_comprehend_detect_dominant_language.json
+  name               = "sfn-state-machine-comprehend-detect-dominant-language"
+  path               = "/${local.organization}/"
+  tags = {
+    account_arn  = data.aws_caller_identity.main.arn
+    account_id   = data.aws_caller_identity.main.account_id
+    organization = local.organization
+    region       = data.aws_region.main.name
+    workspace    = terraform.workspace
+  }
+}
+
+resource "aws_iam_role" "sfn_state_machine_comprehend_detect_entities" {
+  assume_role_policy = data.aws_iam_policy_document.assume_role_sfn_state_machine_comprehend_detect_entities.json
+  name               = "sfn-state-machine-comprehend-detect-entities"
+  path               = "/${local.organization}/"
+  tags = {
+    account_arn  = data.aws_caller_identity.main.arn
+    account_id   = data.aws_caller_identity.main.account_id
+    organization = local.organization
+    region       = data.aws_region.main.name
+    workspace    = terraform.workspace
+  }
+}
+
+resource "aws_iam_role" "sfn_state_machine_comprehend_detect_key_phrases" {
+  assume_role_policy = data.aws_iam_policy_document.assume_role_sfn_state_machine_comprehend_detect_key_phrases.json
+  name               = "sfn-state-machine-comprehend-detect-key-phrases"
+  path               = "/${local.organization}/"
+  tags = {
+    account_arn  = data.aws_caller_identity.main.arn
+    account_id   = data.aws_caller_identity.main.account_id
+    organization = local.organization
+    region       = data.aws_region.main.name
+    workspace    = terraform.workspace
+  }
+}
+
+resource "aws_iam_role" "sfn_state_machine_comprehend_detect_pii_entities" {
+  assume_role_policy = data.aws_iam_policy_document.assume_role_sfn_state_machine_comprehend_detect_pii_entities.json
+  name               = "sfn-state-machine-comprehend-detect-pii-entities"
+  path               = "/${local.organization}/"
+  tags = {
+    account_arn  = data.aws_caller_identity.main.arn
+    account_id   = data.aws_caller_identity.main.account_id
+    organization = local.organization
+    region       = data.aws_region.main.name
+    workspace    = terraform.workspace
+  }
+}
+
+resource "aws_iam_role" "sfn_state_machine_comprehend_detect_sentiment" {
+  assume_role_policy = data.aws_iam_policy_document.assume_role_sfn_state_machine_comprehend_detect_sentiment.json
+  name               = "sfn-state-machine-comprehend-detect-sentiment"
+  path               = "/${local.organization}/"
+  tags = {
+    account_arn  = data.aws_caller_identity.main.arn
+    account_id   = data.aws_caller_identity.main.account_id
+    organization = local.organization
+    region       = data.aws_region.main.name
+    workspace    = terraform.workspace
+  }
+}
+
+resource "aws_iam_role" "sfn_state_machine_comprehend_detect_syntax" {
+  assume_role_policy = data.aws_iam_policy_document.assume_role_sfn_state_machine_comprehend_detect_syntax.json
+  name               = "sfn-state-machine-comprehend-detect-syntax"
+  path               = "/${local.organization}/"
+  tags = {
+    account_arn  = data.aws_caller_identity.main.arn
+    account_id   = data.aws_caller_identity.main.account_id
+    organization = local.organization
+    region       = data.aws_region.main.name
+    workspace    = terraform.workspace
+  }
+}
+
+resource "aws_iam_role" "sfn_state_machine_comprehend_detect_targeted_sentiment" {
+  assume_role_policy = data.aws_iam_policy_document.assume_role_sfn_state_machine_comprehend_detect_targeted_sentiment.json
+  name               = "sfn-state-machine-comprehend-detect-targeted-sentiment"
+  path               = "/${local.organization}/"
+  tags = {
+    account_arn  = data.aws_caller_identity.main.arn
+    account_id   = data.aws_caller_identity.main.account_id
+    organization = local.organization
+    region       = data.aws_region.main.name
+    workspace    = terraform.workspace
+  }
+}
+
+resource "aws_iam_role" "sfn_state_machine_comprehend_detect_toxic_content" {
+  assume_role_policy = data.aws_iam_policy_document.assume_role_sfn_state_machine_comprehend_detect_toxic_content.json
+  name               = "sfn-state-machine-comprehend-detect-toxic-content"
+  path               = "/${local.organization}/"
+  tags = {
+    account_arn  = data.aws_caller_identity.main.arn
+    account_id   = data.aws_caller_identity.main.account_id
+    organization = local.organization
+    region       = data.aws_region.main.name
+    workspace    = terraform.workspace
+  }
+}
+
+resource "aws_iam_role" "sfn_state_machine_s3_object_created_text" {
+  assume_role_policy = data.aws_iam_policy_document.assume_role_sfn_state_machine_s3_object_created_text.json
+  name               = "sfn-state-machine-s3-object-created-text"
   path               = "/${local.organization}/"
   tags = {
     account_arn  = data.aws_caller_identity.main.arn
