@@ -8,7 +8,7 @@ data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_detect_
       identifiers = ["pipes.amazonaws.com"]
       type        = "Service"
     }
-    sid = "pipes-pip-s3-object-created-detect-dominant-language"
+    sid = "assume-role-pipes-pip-s3-object-created-detect-dominant-language"
   }
 }
 
@@ -22,7 +22,7 @@ data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_detect_
       identifiers = ["pipes.amazonaws.com"]
       type        = "Service"
     }
-    sid = "pipes-pipe-s3-object-created-detect-entities"
+    sid = "assume-role-pipes-pipe-s3-object-created-detect-entities"
   }
 }
 
@@ -36,7 +36,7 @@ data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_detect_
       identifiers = ["pipes.amazonaws.com"]
       type        = "Service"
     }
-    sid = "pipes-pipe-s3-object-created-detect-key-phrases"
+    sid = "assume-role-pipes-pipe-s3-object-created-detect-key-phrases"
   }
 }
 
@@ -50,7 +50,7 @@ data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_detect_
       identifiers = ["pipes.amazonaws.com"]
       type        = "Service"
     }
-    sid = "pipes-pipe-s3-object-created-detect-pii-entities"
+    sid = "assume-role-pipes-pipe-s3-object-created-detect-pii-entities"
   }
 }
 
@@ -64,7 +64,7 @@ data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_detect_
       identifiers = ["pipes.amazonaws.com"]
       type        = "Service"
     }
-    sid = "pipes-pipe-s3-object-created-detect-sentiment"
+    sid = "assume-role-pipes-pipe-s3-object-created-detect-sentiment"
   }
 }
 
@@ -78,7 +78,7 @@ data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_detect_
       identifiers = ["pipes.amazonaws.com"]
       type        = "Service"
     }
-    sid = "pipes-pipe-s3-object-created-detect-syntax"
+    sid = "assume-role-pipes-pipe-s3-object-created-detect-syntax"
   }
 }
 
@@ -92,7 +92,7 @@ data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_detect_
       identifiers = ["pipes.amazonaws.com"]
       type        = "Service"
     }
-    sid = "pipes-pipe-s3-object-created-detect-targeted-sentiment"
+    sid = "assume-role-pipes-pipe-s3-object-created-detect-targeted-sentiment"
   }
 }
 
@@ -106,7 +106,7 @@ data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_detect_
       identifiers = ["pipes.amazonaws.com"]
       type        = "Service"
     }
-    sid = "pipes-pipe-s3-object-created-detect-toxic-content"
+    sid = "assume-role-pipes-pipe-s3-object-created-detect-toxic-content"
   }
 }
 
@@ -120,7 +120,133 @@ data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_text" {
       identifiers = ["pipes.amazonaws.com"]
       type        = "Service"
     }
-    sid = "pipes-pipe-s3-object-created-text"
+    sid = "assume-role-pipes-pipe-s3-object-created-text"
+  }
+}
+
+data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_detect_dominant_language" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    effect = "Allow"
+    principals {
+      identifiers = ["states.amazonaws.com"]
+      type        = "Service"
+    }
+    sid = "pipes-pip-s3-object-created-detect-dominant-language"
+  }
+}
+
+data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_detect_entities" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    effect = "Allow"
+    principals {
+      identifiers = ["states.amazonaws.com"]
+      type        = "Service"
+    }
+    sid = "assume-role-sfn-state-machine-s3-object-created-detect-entities"
+  }
+}
+
+data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_detect_key_phrases" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    effect = "Allow"
+    principals {
+      identifiers = ["states.amazonaws.com"]
+      type        = "Service"
+    }
+    sid = "assume-role-sfn-state-machine-s3-object-created-detect-key-phrases"
+  }
+}
+
+data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_detect_pii_entities" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    effect = "Allow"
+    principals {
+      identifiers = ["states.amazonaws.com"]
+      type        = "Service"
+    }
+    sid = "assume-role-sfn-state-machine-s3-object-created-detect-pii-entities"
+  }
+}
+
+data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_detect_sentiment" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    effect = "Allow"
+    principals {
+      identifiers = ["states.amazonaws.com"]
+      type        = "Service"
+    }
+    sid = "assume-role-sfn-state-machine-s3-object-created-detect-sentiment"
+  }
+}
+
+data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_detect_syntax" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    effect = "Allow"
+    principals {
+      identifiers = ["states.amazonaws.com"]
+      type        = "Service"
+    }
+    sid = "assume-role-sfn-state-machine-s3-object-created-detect-syntax"
+  }
+}
+
+data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_detect_targeted_sentiment" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    effect = "Allow"
+    principals {
+      identifiers = ["states.amazonaws.com"]
+      type        = "Service"
+    }
+    sid = "assume-role-sfn-state-machine-s3-object-created-detect-targeted-sentiment"
+  }
+}
+
+data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_detect_toxic_content" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    effect = "Allow"
+    principals {
+      identifiers = ["states.amazonaws.com"]
+      type        = "Service"
+    }
+    sid = "assume-role-sfn-state-machine-s3-object-created-detect-toxic-content"
+  }
+}
+
+data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_text" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    effect = "Allow"
+    principals {
+      identifiers = ["states.amazonaws.com"]
+      type        = "Service"
+    }
+    sid = "assume-role-sfn-state-machine-s3-object-created-text"
   }
 }
 
