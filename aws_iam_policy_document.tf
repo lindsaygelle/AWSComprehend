@@ -124,7 +124,7 @@ data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_text" {
   }
 }
 
-data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_detect_dominant_language" {
+data "aws_iam_policy_document" "assume_role_sfn_state_machine_comprehend_detect_dominant_language" {
   statement {
     actions = [
       "sts:AssumeRole"
@@ -138,7 +138,7 @@ data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_
   }
 }
 
-data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_detect_entities" {
+data "aws_iam_policy_document" "assume_role_sfn_state_machine_comprehend_detect_entities" {
   statement {
     actions = [
       "sts:AssumeRole"
@@ -148,11 +148,11 @@ data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_
       identifiers = ["states.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-sfn-state-machine-s3-object-created-detect-entities"
+    sid = "assume-role-sfn-state-machine-comprehend-detect-entities"
   }
 }
 
-data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_detect_key_phrases" {
+data "aws_iam_policy_document" "assume_role_sfn_state_machine_comprehend_detect_key_phrases" {
   statement {
     actions = [
       "sts:AssumeRole"
@@ -162,11 +162,11 @@ data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_
       identifiers = ["states.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-sfn-state-machine-s3-object-created-detect-key-phrases"
+    sid = "assume-role-sfn-state-machine-comprehend-detect-key-phrases"
   }
 }
 
-data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_detect_pii_entities" {
+data "aws_iam_policy_document" "assume_role_sfn_state_machine_comprehend_detect_pii_entities" {
   statement {
     actions = [
       "sts:AssumeRole"
@@ -176,11 +176,11 @@ data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_
       identifiers = ["states.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-sfn-state-machine-s3-object-created-detect-pii-entities"
+    sid = "assume-role-sfn-state-machine-comprehend-detect-pii-entities"
   }
 }
 
-data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_detect_sentiment" {
+data "aws_iam_policy_document" "assume_role_sfn_state_machine_comprehend_detect_sentiment" {
   statement {
     actions = [
       "sts:AssumeRole"
@@ -190,11 +190,11 @@ data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_
       identifiers = ["states.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-sfn-state-machine-s3-object-created-detect-sentiment"
+    sid = "assume-role-sfn-state-machine-comprehend-detect-sentiment"
   }
 }
 
-data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_detect_syntax" {
+data "aws_iam_policy_document" "assume_role_sfn_state_machine_comprehend_detect_syntax" {
   statement {
     actions = [
       "sts:AssumeRole"
@@ -204,11 +204,11 @@ data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_
       identifiers = ["states.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-sfn-state-machine-s3-object-created-detect-syntax"
+    sid = "assume-role-sfn-state-machine-comprehend-detect-syntax"
   }
 }
 
-data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_detect_targeted_sentiment" {
+data "aws_iam_policy_document" "assume_role_sfn_state_machine_comprehend_detect_targeted_sentiment" {
   statement {
     actions = [
       "sts:AssumeRole"
@@ -218,11 +218,11 @@ data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_
       identifiers = ["states.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-sfn-state-machine-s3-object-created-detect-targeted-sentiment"
+    sid = "assume-role-sfn-state-machine-comprehend-detect-targeted-sentiment"
   }
 }
 
-data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_detect_toxic_content" {
+data "aws_iam_policy_document" "assume_role_sfn_state_machine_comprehend_detect_toxic_content" {
   statement {
     actions = [
       "sts:AssumeRole"
@@ -232,7 +232,7 @@ data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_
       identifiers = ["states.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-sfn-state-machine-s3-object-created-detect-toxic-content"
+    sid = "assume-role-sfn-state-machine-comprehend-detect-toxic-content"
   }
 }
 
@@ -246,7 +246,7 @@ data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_
       identifiers = ["states.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-sfn-state-machine-s3-object-created-text"
+    sid = "assume-role-sfn-state-machine-comprehend-text"
   }
 }
 
@@ -376,6 +376,39 @@ data "aws_iam_policy_document" "pipes_pipe_s3_object_created_text" {
   }
 }
 
+data "aws_iam_policy_document" "sns_topic_s3_bucket_notification" {
+  statement {
+    actions = ["SNS:Publish"]
+
+    condition {
+      test     = "ArnLike"
+      values   = [aws_s3_bucket.main.arn]
+      variable = "aws:SourceArn"
+    }
+
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["s3.amazonaws.com"]
+    }
+
+    resources = [
+      aws_sns_topic.s3_object_created_detect_dominant_language.arn,
+      aws_sns_topic.s3_object_created_detect_entities.arn,
+      aws_sns_topic.s3_object_created_detect_key_phrases.arn,
+      aws_sns_topic.s3_object_created_detect_pii_entities.arn,
+      aws_sns_topic.s3_object_created_detect_sentiment.arn,
+      aws_sns_topic.s3_object_created_detect_syntax.arn,
+      aws_sns_topic.s3_object_created_detect_targeted_sentiment.arn,
+      aws_sns_topic.s3_object_created_detect_toxic_content.arn,
+      aws_sns_topic.s3_object_created_text.arn
+    ]
+
+    sid = "sns-topic-s3-bucket-notification"
+  }
+}
+
 data "aws_iam_policy_document" "sqs_queue_s3_bucket_notification" {
   statement {
     actions = ["SQS:SendMessage"]
@@ -406,5 +439,243 @@ data "aws_iam_policy_document" "sqs_queue_s3_bucket_notification" {
     ]
 
     sid = "sqs-queue-s3-bucket-notification"
+  }
+}
+
+data "aws_iam_policy_document" "sfn_state_machine_comprehend_detect_dominant_language" {
+  statement {
+    actions = [
+      "comprehend:DetectDominantLanguage",
+      "comprehend:ListDominantLanguageDetectionJobs"
+    ]
+    effect = "Allow"
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "s3:PutObject"
+    ]
+    condition {
+      test = "StringLike"
+      values = [
+        aws_s3_object.detect_dominant_language.key
+      ]
+      variable = "s3:prefix"
+    }
+    effect = "Allow"
+    resources = [
+      aws_s3_bucket.main.arn
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "sfn_state_machine_comprehend_detect_entities" {
+  statement {
+    actions = [
+      "comprehend:DetectEntities",
+      "comprehend:ListEntitiesDetectionJobs"
+    ]
+    effect = "Allow"
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "s3:PutObject"
+    ]
+    condition {
+      test = "StringLike"
+      values = [
+        aws_s3_object.detect_entities.key
+      ]
+      variable = "s3:prefix"
+    }
+    effect = "Allow"
+    resources = [
+      aws_s3_bucket.main.arn
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "sfn_state_machine_comprehend_detect_key_phrases" {
+  statement {
+    actions = [
+      "comprehend:DetectKeyPhrases",
+      "comprehend:ListKeyPhrasesDetectionJobs"
+    ]
+    effect = "Allow"
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "s3:PutObject"
+    ]
+    condition {
+      test = "StringLike"
+      values = [
+        aws_s3_object.detect_key_phrases.key
+      ]
+      variable = "s3:prefix"
+    }
+    effect = "Allow"
+    resources = [
+      aws_s3_bucket.main.arn
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "sfn_state_machine_comprehend_detect_pii_entities" {
+  statement {
+    actions = [
+      "comprehend:DetectPiiEntities",
+      "comprehend:ListPiiEntitiesDetectionJobs"
+    ]
+    effect = "Allow"
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "s3:PutObject"
+    ]
+    condition {
+      test = "StringLike"
+      values = [
+        aws_s3_object.detect_pii_entities.key
+      ]
+      variable = "s3:prefix"
+    }
+    effect = "Allow"
+    resources = [
+      aws_s3_bucket.main.arn
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "sfn_state_machine_comprehend_detect_sentiment" {
+  statement {
+    actions = [
+      "comprehend:DetectSentiment",
+      "comprehend:ListSentimentDetectionJobs"
+    ]
+    effect = "Allow"
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "s3:PutObject"
+    ]
+    condition {
+      test = "StringLike"
+      values = [
+        aws_s3_object.detect_sentiment.key
+      ]
+      variable = "s3:prefix"
+    }
+    effect = "Allow"
+    resources = [
+      aws_s3_bucket.main.arn
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "sfn_state_machine_comprehend_detect_syntax" {
+  statement {
+    actions = [
+      "comprehend:DetectSyntax",
+    ]
+    effect = "Allow"
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "s3:PutObject"
+    ]
+    condition {
+      test = "StringLike"
+      values = [
+        aws_s3_object.detect_syntax.key
+      ]
+      variable = "s3:prefix"
+    }
+    effect = "Allow"
+    resources = [
+      aws_s3_bucket.main.arn
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "sfn_state_machine_comprehend_detect_targeted_sentiment" {
+  statement {
+    actions = [
+      "comprehend:DetectTargetedSentiment",
+      "comprehend:ListTargetedSentimentDetectionJobs"
+    ]
+    effect = "Allow"
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "s3:PutObject"
+    ]
+    condition {
+      test = "StringLike"
+      values = [
+        aws_s3_object.detect_targeted_sentiment.key
+      ]
+      variable = "s3:prefix"
+    }
+    effect = "Allow"
+    resources = [
+      aws_s3_bucket.main.arn
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "sfn_state_machine_comprehend_detect_toxic_content" {
+  statement {
+    actions = [
+      "comprehend:DetectToxicContent",
+    ]
+    effect = "Allow"
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "s3:PutObject"
+    ]
+    condition {
+      test = "StringLike"
+      values = [
+        aws_s3_object.detect_toxic_content.key
+      ]
+      variable = "s3:prefix"
+    }
+    effect = "Allow"
+    resources = [
+      aws_s3_bucket.main.arn
+    ]
   }
 }
