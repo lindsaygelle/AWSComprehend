@@ -290,6 +290,15 @@ data "aws_iam_policy_document" "pipes_pipe_s3_object_created_detect_entities" {
       aws_sqs_queue.s3_object_created_detect_entities.arn
     ]
   }
+  statement {
+    actions = [
+      "states:StartExecution"
+    ]
+    effect = "Allow"
+    resources = [
+      aws_sfn_state_machine.comprehend_detect_entities.arn
+    ]
+  }
 }
 
 data "aws_iam_policy_document" "pipes_pipe_s3_object_created_detect_key_phrases" {
@@ -388,6 +397,15 @@ data "aws_iam_policy_document" "pipes_pipe_s3_object_created_document" {
       aws_sqs_queue.s3_object_created_document.arn
     ]
   }
+  statement {
+    actions = [
+      "states:StartExecution"
+    ]
+    effect = "Allow"
+    resources = [
+      aws_sfn_state_machine.comprehend_detect_dominant_language.arn
+    ]
+  }
 }
 
 data "aws_iam_policy_document" "pipes_pipe_s3_object_created_text" {
@@ -431,15 +449,6 @@ data "aws_iam_policy_document" "sfn_state_machine_s3_object_created_text" {
     effect = "Allow"
     resources = [
       "${aws_s3_bucket.main.arn}/${aws_s3_object.document.key}*"
-    ]
-  }
-  statement {
-    actions = [
-      "states:StartExecution"
-    ]
-    effect = "Allow"
-    resources = [
-      aws_sfn_state_machine.comprehend_detect_dominant_language.arn
     ]
   }
 }
@@ -527,18 +536,22 @@ data "aws_iam_policy_document" "sfn_state_machine_comprehend_detect_dominant_lan
 
   statement {
     actions = [
-      "s3:PutObject"
+      "S3:GetObject",
+      "S3:GetObjectVersion"
     ]
-    condition {
-      test = "StringLike"
-      values = [
-        aws_s3_object.detect_dominant_language.key
-      ]
-      variable = "s3:prefix"
-    }
     effect = "Allow"
     resources = [
-      aws_s3_bucket.main.arn
+      "${aws_s3_bucket.main.arn}/${aws_s3_object.document.key}*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "S3:PutObject"
+    ]
+    effect = "Allow"
+    resources = [
+      "${aws_s3_bucket.main.arn}/${aws_s3_object.detect_dominant_language.key}*"
     ]
   }
 }

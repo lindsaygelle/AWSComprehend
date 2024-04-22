@@ -23,3 +23,5 @@ Polynomial expressions: Expressions consisting of variables and coefficients, wi
 Factoring and simplifying: Methods for manipulating algebraic expressions and equations.
 
 Algebra is a fundamental tool for problem-solving and is widely used in various fields, including physics, engineering, economics, and computer science.
+
+aws s3 cp ./ALGEBRA.txt s3://385739365063-monarch/text/ALGEBRA.txt

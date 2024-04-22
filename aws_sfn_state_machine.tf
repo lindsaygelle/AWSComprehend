@@ -76,7 +76,7 @@ resource "aws_sfn_state_machine" "comprehend_detect_dominant_language" {
                               },
                               "configurationId.$": "$[0].s3.configurationId",
                               "object": {
-                                "body.$": "$[1].Body",
+                                "body.$": "States.StringToJson($[1].Body)",
                                 "acceptRanges.$": "$[1].AcceptRanges",
                                 "contentLength.$": "$[1].ContentLength",
                                 "contentType.$": "$[1].ContentType",
@@ -111,16 +111,105 @@ resource "aws_sfn_state_machine" "comprehend_detect_dominant_language" {
                               "States": {
                                 "DetectDominantLanguage": {
                                   "Type": "Task",
-                                  "End": true,
                                   "Parameters": {
-                                    "Text.$": "$.s3.object.text"
+                                    "Text.$": "$.s3.object.body.text"
                                   },
-                                  "Resource": "arn:aws:states:::aws-sdk:comprehend:detectDominantLanguage"
+                                  "Resource": "arn:aws:states:::aws-sdk:comprehend:detectDominantLanguage",
+                                  "Next": "Map (2)"
+                                },
+                                "Map (2)": {
+                                  "Type": "Map",
+                                  "ItemProcessor": {
+                                    "ProcessorConfig": {
+                                      "Mode": "INLINE"
+                                    },
+                                    "StartAt": "Pass (3)",
+                                    "States": {
+                                      "Pass (3)": {
+                                        "Type": "Pass",
+                                        "End": true,
+                                        "Parameters": {
+                                          "language_code.$": "$.LanguageCode",
+                                          "score.$": "$.Score"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "End": true,
+                                  "InputPath": "$.Languages",
+                                  "ResultSelector": {
+                                    "languages.$": "$"
+                                  }
                                 }
                               }
                             }
                           ],
-                          "End": true
+                          "ResultSelector": {
+                            "awsRegion.$": "$[0].awsRegion",
+                            "comprehend.$": "$[1]",
+                            "eventName.$": "$[0].eventName",
+                            "eventSource.$": "$[0].eventSource",
+                            "eventTime.$": "$[0].eventTime",
+                            "eventVersion.$": "$[0].eventVersion",
+                            "requestParameters.$": "$[0].requestParameters",
+                            "s3": {
+                              "bucket.$": "$[0].s3.bucket",
+                              "configurationId.$": "$[0].s3.configurationId",
+                              "object.$": "$[0].s3.object"
+                            },
+                            "userIdentity.$": "$[0].userIdentity"
+                          },
+                          "Next": "Parallel (3)"
+                        },
+                        "Parallel (3)": {
+                          "Type": "Parallel",
+                          "End": true,
+                          "Branches": [
+                            {
+                              "StartAt": "PutObject",
+                              "States": {
+                                "PutObject": {
+                                  "Type": "Task",
+                                  "End": true,
+                                  "Parameters": {
+                                    "Body": {
+                                      "comprehend.$": "$.comprehend",
+                                      "event": {
+                                        "name.$": "$.eventName",
+                                        "source.$": "$.eventSource",
+                                        "time.$": "$.eventTime",
+                                        "version.$": "$.eventVersion"
+                                      },
+                                      "request_parameters": {
+                                        "source_ip_address.$": "$.requestParameters.sourceIPAddress"
+                                      },
+                                      "s3": {
+                                        "bucket": {
+                                          "arn.$": "$.s3.bucket.arn",
+                                          "name.$": "$.s3.bucket.name"
+                                        },
+                                        "object": {
+                                          "accept_ranges.$": "$.s3.object.acceptRanges",
+                                          "content_type.$": "$.s3.object.contentType",
+                                          "content_length.$": "$.s3.object.contentLength",
+                                          "e_tag.$": "$.s3.object.eTag",
+                                          "key.$": "$.s3.object.key",
+                                          "last_modified.$": "$.s3.object.lastModified",
+                                          "metadata.$": "$.s3.object.metadata"
+                                        }
+                                      },
+                                      "user_identity": {
+                                        "principal_id.$": "$.userIdentity.principalId"
+                                      }
+                                    },
+                                    "Bucket.$": "$.s3.bucket.name",
+                                    "Key.$": "States.Format('${aws_s3_object.detect_dominant_language.key}{}.json', $.s3.object.eTag)"
+                                  },
+                                  "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
+                                }
+                              }
+                            }
+                          ]
                         }
                       }
                     },
@@ -361,6 +450,7 @@ resource "aws_sfn_state_machine" "s3_object_created_text" {
                                           "name.$": "$.s3.bucket.name"
                                         },
                                         "object": {
+                                          "accept_ranges.$": "$.s3.object.acceptRanges",
                                           "content_type.$": "$.s3.object.contentType",
                                           "content_length.$": "$.s3.object.contentLength",
                                           "e_tag.$": "$.s3.object.eTag",
