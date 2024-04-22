@@ -8,7 +8,7 @@ data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_detect_
       identifiers = ["pipes.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-pipes-pip-s3-object-created-detect-dominant-language"
+    // sid = "assume-role-pipes-pip-s3-object-created-detect-dominant-language"
   }
 }
 
@@ -22,7 +22,7 @@ data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_detect_
       identifiers = ["pipes.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-pipes-pipe-s3-object-created-detect-entities"
+    // sid = "assume-role-pipes-pipe-s3-object-created-detect-entities"
   }
 }
 
@@ -36,7 +36,7 @@ data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_detect_
       identifiers = ["pipes.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-pipes-pipe-s3-object-created-detect-key-phrases"
+    // sid = "assume-role-pipes-pipe-s3-object-created-detect-key-phrases"
   }
 }
 
@@ -50,7 +50,7 @@ data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_detect_
       identifiers = ["pipes.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-pipes-pipe-s3-object-created-detect-pii-entities"
+    // sid = "assume-role-pipes-pipe-s3-object-created-detect-pii-entities"
   }
 }
 
@@ -64,7 +64,7 @@ data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_detect_
       identifiers = ["pipes.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-pipes-pipe-s3-object-created-detect-sentiment"
+    // sid = "assume-role-pipes-pipe-s3-object-created-detect-sentiment"
   }
 }
 
@@ -78,7 +78,7 @@ data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_detect_
       identifiers = ["pipes.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-pipes-pipe-s3-object-created-detect-syntax"
+    // sid = "assume-role-pipes-pipe-s3-object-created-detect-syntax"
   }
 }
 
@@ -92,7 +92,7 @@ data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_detect_
       identifiers = ["pipes.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-pipes-pipe-s3-object-created-detect-targeted-sentiment"
+    // sid = "assume-role-pipes-pipe-s3-object-created-detect-targeted-sentiment"
   }
 }
 
@@ -106,7 +106,7 @@ data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_detect_
       identifiers = ["pipes.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-pipes-pipe-s3-object-created-detect-toxic-content"
+    // sid = "assume-role-pipes-pipe-s3-object-created-detect-toxic-content"
   }
 }
 
@@ -120,7 +120,7 @@ data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_text" {
       identifiers = ["pipes.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-pipes-pipe-s3-object-created-text"
+    // sid = "assume-role-pipes-pipe-s3-object-created-text"
   }
 }
 
@@ -134,7 +134,7 @@ data "aws_iam_policy_document" "assume_role_sfn_state_machine_comprehend_detect_
       identifiers = ["states.amazonaws.com"]
       type        = "Service"
     }
-    sid = "pipes-pip-s3-object-created-detect-dominant-language"
+    // sid = "pipes-pip-s3-object-created-detect-dominant-language"
   }
 }
 
@@ -148,7 +148,7 @@ data "aws_iam_policy_document" "assume_role_sfn_state_machine_comprehend_detect_
       identifiers = ["states.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-sfn-state-machine-comprehend-detect-entities"
+    // sid = "assume-role-sfn-state-machine-comprehend-detect-entities"
   }
 }
 
@@ -162,7 +162,7 @@ data "aws_iam_policy_document" "assume_role_sfn_state_machine_comprehend_detect_
       identifiers = ["states.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-sfn-state-machine-comprehend-detect-key-phrases"
+    // sid = "assume-role-sfn-state-machine-comprehend-detect-key-phrases"
   }
 }
 
@@ -176,7 +176,7 @@ data "aws_iam_policy_document" "assume_role_sfn_state_machine_comprehend_detect_
       identifiers = ["states.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-sfn-state-machine-comprehend-detect-pii-entities"
+    // sid = "assume-role-sfn-state-machine-comprehend-detect-pii-entities"
   }
 }
 
@@ -190,7 +190,7 @@ data "aws_iam_policy_document" "assume_role_sfn_state_machine_comprehend_detect_
       identifiers = ["states.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-sfn-state-machine-comprehend-detect-sentiment"
+    // sid = "assume-role-sfn-state-machine-comprehend-detect-sentiment"
   }
 }
 
@@ -204,7 +204,7 @@ data "aws_iam_policy_document" "assume_role_sfn_state_machine_comprehend_detect_
       identifiers = ["states.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-sfn-state-machine-comprehend-detect-syntax"
+    // sid = "assume-role-sfn-state-machine-comprehend-detect-syntax"
   }
 }
 
@@ -218,7 +218,7 @@ data "aws_iam_policy_document" "assume_role_sfn_state_machine_comprehend_detect_
       identifiers = ["states.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-sfn-state-machine-comprehend-detect-targeted-sentiment"
+    // sid = "assume-role-sfn-state-machine-comprehend-detect-targeted-sentiment"
   }
 }
 
@@ -232,7 +232,7 @@ data "aws_iam_policy_document" "assume_role_sfn_state_machine_comprehend_detect_
       identifiers = ["states.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-sfn-state-machine-comprehend-detect-toxic-content"
+    // sid = "assume-role-sfn-state-machine-comprehend-detect-toxic-content"
   }
 }
 
@@ -246,7 +246,7 @@ data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_
       identifiers = ["states.amazonaws.com"]
       type        = "Service"
     }
-    sid = "assume-role-sfn-state-machine-comprehend-text"
+    // sid = "assume-role-sfn-state-machine-comprehend-text"
   }
 }
 
@@ -376,6 +376,28 @@ data "aws_iam_policy_document" "pipes_pipe_s3_object_created_text" {
   }
 }
 
+data "aws_iam_policy_document" "sfn_state_machine_s3_object_created_text" {
+  statement {
+    actions = [
+      "S3:GetObject",
+      "S3:GetObjectVersion"
+    ]
+    effect = "Allow"
+    resources = [
+      "${aws_s3_bucket.main.arn}/${aws_s3_object.text.key}*"
+    ]
+  }
+  statement {
+    actions = [
+      "S3:PutObject"
+    ]
+    effect = "Allow"
+    resources = [
+      "${aws_s3_bucket.main.arn}/${aws_s3_object.document.key}*"
+    ]
+  }
+}
+
 data "aws_iam_policy_document" "sns_topic_s3_bucket_notification" {
   statement {
     actions = ["SNS:Publish"]
@@ -405,7 +427,7 @@ data "aws_iam_policy_document" "sns_topic_s3_bucket_notification" {
       aws_sns_topic.s3_object_created_text.arn
     ]
 
-    sid = "sns-topic-s3-bucket-notification"
+    // sid = "sns-topic-s3-bucket-notification"
   }
 }
 
@@ -438,7 +460,7 @@ data "aws_iam_policy_document" "sqs_queue_s3_bucket_notification" {
       aws_sqs_queue.s3_object_created_text.arn
     ]
 
-    sid = "sqs-queue-s3-bucket-notification"
+    // sid = "sqs-queue-s3-bucket-notification"
   }
 }
 
