@@ -110,6 +110,20 @@ data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_detect_
   }
 }
 
+data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_document" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    effect = "Allow"
+    principals {
+      identifiers = ["pipes.amazonaws.com"]
+      type        = "Service"
+    }
+    // sid = "assume-role-pipes-pipe-s3-object-created-text"
+  }
+}
+
 data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_text" {
   statement {
     actions = [
@@ -362,6 +376,20 @@ data "aws_iam_policy_document" "pipes_pipe_s3_object_created_detect_toxic_conten
   }
 }
 
+data "aws_iam_policy_document" "pipes_pipe_s3_object_created_document" {
+  statement {
+    actions = [
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes",
+      "sqs:ReceiveMessage",
+    ]
+    effect = "Allow"
+    resources = [
+      aws_sqs_queue.s3_object_created_document.arn
+    ]
+  }
+}
+
 data "aws_iam_policy_document" "pipes_pipe_s3_object_created_text" {
   statement {
     actions = [
@@ -372,6 +400,15 @@ data "aws_iam_policy_document" "pipes_pipe_s3_object_created_text" {
     effect = "Allow"
     resources = [
       aws_sqs_queue.s3_object_created_text.arn
+    ]
+  }
+  statement {
+    actions = [
+      "states:StartExecution"
+    ]
+    effect = "Allow"
+    resources = [
+      aws_sfn_state_machine.s3_object_created_text.arn
     ]
   }
 }
@@ -396,8 +433,18 @@ data "aws_iam_policy_document" "sfn_state_machine_s3_object_created_text" {
       "${aws_s3_bucket.main.arn}/${aws_s3_object.document.key}*"
     ]
   }
+  statement {
+    actions = [
+      "states:StartExecution"
+    ]
+    effect = "Allow"
+    resources = [
+      aws_sfn_state_machine.comprehend_detect_dominant_language.arn
+    ]
+  }
 }
 
+/*
 data "aws_iam_policy_document" "sns_topic_s3_bucket_notification" {
   statement {
     actions = ["SNS:Publish"]
@@ -430,6 +477,7 @@ data "aws_iam_policy_document" "sns_topic_s3_bucket_notification" {
     // sid = "sns-topic-s3-bucket-notification"
   }
 }
+*/
 
 data "aws_iam_policy_document" "sqs_queue_s3_bucket_notification" {
   statement {
@@ -457,6 +505,7 @@ data "aws_iam_policy_document" "sqs_queue_s3_bucket_notification" {
       aws_sqs_queue.s3_object_created_detect_syntax.arn,
       aws_sqs_queue.s3_object_created_detect_targeted_sentiment.arn,
       aws_sqs_queue.s3_object_created_detect_toxic_content.arn,
+      aws_sqs_queue.s3_object_created_document.arn,
       aws_sqs_queue.s3_object_created_text.arn
     ]
 

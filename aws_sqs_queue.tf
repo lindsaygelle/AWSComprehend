@@ -89,7 +89,7 @@ resource "aws_sqs_queue" "s3_object_created_detect_syntax" {
 }
 
 resource "aws_sqs_queue" "s3_object_created_detect_targeted_sentiment" {
-  name                      = "${local.organization}-s3-object-created-targeted-sentiment"
+  name                      = "${local.organization}-s3-object-created-detect-targeted-sentiment"
   message_retention_seconds = 86400
   tags = {
     account_arn  = data.aws_caller_identity.main.arn
@@ -112,6 +112,20 @@ resource "aws_sqs_queue" "s3_object_created_detect_toxic_content" {
     bucket       = aws_s3_bucket.main.id
     bucket_key   = aws_s3_object.detect_toxic_content.key
     comprehend   = "detect_toxic_content"
+    organization = local.organization
+    region       = data.aws_region.main.name
+    workspace    = terraform.workspace
+  }
+}
+
+resource "aws_sqs_queue" "s3_object_created_document" {
+  name                      = "${local.organization}-s3-object-created-document"
+  message_retention_seconds = 86400
+  tags = {
+    account_arn  = data.aws_caller_identity.main.arn
+    account_id   = data.aws_caller_identity.main.account_id
+    bucket       = aws_s3_bucket.main.id
+    bucket_key   = aws_s3_object.document.key
     organization = local.organization
     region       = data.aws_region.main.name
     workspace    = terraform.workspace

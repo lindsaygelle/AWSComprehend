@@ -38,6 +38,11 @@ resource "aws_sqs_queue_policy" "s3_object_created_detect_toxic_content" {
   queue_url = aws_sqs_queue.s3_object_created_detect_toxic_content.id
 }
 
+resource "aws_sqs_queue_policy" "s3_object_created_document" {
+  policy    = data.aws_iam_policy_document.sqs_queue_s3_bucket_notification.json
+  queue_url = aws_sqs_queue.s3_object_created_document.id
+}
+
 resource "aws_sqs_queue_policy" "s3_object_created_text" {
   policy    = data.aws_iam_policy_document.sqs_queue_s3_bucket_notification.json
   queue_url = aws_sqs_queue.s3_object_created_text.id
