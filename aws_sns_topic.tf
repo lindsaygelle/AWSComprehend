@@ -1,3 +1,4 @@
+/*
 resource "aws_sns_topic" "s3_object_created_detect_dominant_language" {
   name = "${local.organization}-s3-object-created-detect-dominant-language"
   tags = {
@@ -122,3 +123,4 @@ resource "aws_sns_topic" "s3_object_created_text" {
     workspace    = terraform.workspace
   }
 }
+*/
