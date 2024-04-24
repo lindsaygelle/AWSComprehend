@@ -1,43 +1,73 @@
 {
-    "StartAt": "Map",
+    "StartAt": "ProcessSQSEvent",
     "States": {
-        "Map": {
+        "ProcessSQSEvent": {
             "Type": "Map",
             "ItemProcessor": {
                 "ProcessorConfig": {
                     "Mode": "INLINE"
                 },
-                "StartAt": "Pass",
+                "StartAt": "ParseSQSEventBody",
                 "States": {
-                    "Pass": {
+                    "ParseSQSEventBody": {
                         "Type": "Pass",
                         "Parameters": {
                             "body.$": "States.StringToJson($.body)"
                         },
-                        "Next": "Parallel"
+                        "Next": "CheckSQSBodyRecords"
                     },
-                    "Parallel": {
+                    "CheckSQSBodyRecords": {
+                        "Type": "Choice",
+                        "Choices": [
+                            {
+                                "Variable": "$.body.Records",
+                                "IsPresent": true,
+                                "Next": "ProcessSQSBodyRecordsAndPass"
+                            }
+                        ],
+                        "Default": "InvalidSQSBody"
+                    },
+                    "InvalidSQSBody": {
+                        "Type": "Pass",
+                        "End": true
+                    },
+                    "ProcessSQSBodyRecordsAndPass": {
                         "Type": "Parallel",
                         "End": true,
                         "Branches": [
                             {
-                                "StartAt": "Map (1)",
+                                "StartAt": "ProcessSQSBodyRecords",
                                 "States": {
-                                    "Map (1)": {
+                                    "ProcessSQSBodyRecords": {
                                         "Type": "Map",
                                         "ItemProcessor": {
                                             "ProcessorConfig": {
                                                 "Mode": "INLINE"
                                             },
-                                            "StartAt": "Parallel (1)",
+                                            "StartAt": "CheckSQSRecordEvent",
                                             "States": {
-                                                "Parallel (1)": {
+                                                "CheckSQSRecordEvent": {
+                                                    "Type": "Choice",
+                                                    "Choices": [
+                                                        {
+                                                            "Variable": "$.eventName",
+                                                            "StringEquals": "ObjectCreated:Put",
+                                                            "Next": "ParallelS3GetObjectAndPass"
+                                                        }
+                                                    ],
+                                                    "Default": "InvalidSQSRecordEvent"
+                                                },
+                                                "InvalidSQSRecordEvent": {
+                                                    "Type": "Pass",
+                                                    "End": true
+                                                },
+                                                "ParallelS3GetObjectAndPass": {
                                                     "Type": "Parallel",
                                                     "Branches": [
                                                         {
-                                                            "StartAt": "Pass (1)",
+                                                            "StartAt": "PassThroughInput",
                                                             "States": {
-                                                                "Pass (1)": {
+                                                                "PassThroughInput": {
                                                                     "Type": "Pass",
                                                                     "End": true
                                                                 }
@@ -83,26 +113,30 @@
                                                         },
                                                         "userIdentity.$": "$[0].userIdentity"
                                                     },
-                                                    "Next": "Choice"
+                                                    "Next": "CheckContentLengthForComprehend"
                                                 },
-                                                "Choice": {
+                                                "CheckContentLengthForComprehend": {
                                                     "Type": "Choice",
                                                     "Choices": [
                                                         {
                                                             "Variable": "$.s3.object.contentLength",
-                                                            "NumericLessThan": 100000,
-                                                            "Next": "Parallel (3)"
+                                                            "NumericLessThanEquals": 100000,
+                                                            "Next": "ParallelComprehendAndPass"
                                                         }
                                                     ],
                                                     "Default": "Pass (2)"
                                                 },
-                                                "Parallel (3)": {
+                                                "Pass (2)": {
+                                                    "Type": "Pass",
+                                                    "End": true
+                                                },
+                                                "ParallelComprehendAndPass": {
                                                     "Type": "Parallel",
                                                     "Branches": [
                                                         {
-                                                            "StartAt": "Pass (3)",
+                                                            "StartAt": "InvalidContentLengthForComprehend",
                                                             "States": {
-                                                                "Pass (3)": {
+                                                                "InvalidContentLengthForComprehend": {
                                                                     "Type": "Pass",
                                                                     "End": true
                                                                 }
@@ -117,112 +151,775 @@
                                                                         "Text.$": "$.s3.object.body"
                                                                     },
                                                                     "Resource": "arn:aws:states:::aws-sdk:comprehend:detectDominantLanguage",
-                                                                    "Next": "Map (2)",
+                                                                    "Next": "ProcessDetectDominantLanguageResults",
                                                                     "ResultPath": "$.comprehend"
                                                                 },
-                                                                "Map (2)": {
+                                                                "ProcessDetectDominantLanguageResults": {
                                                                     "Type": "Map",
                                                                     "ItemProcessor": {
                                                                         "ProcessorConfig": {
                                                                             "Mode": "INLINE"
                                                                         },
-                                                                        "StartAt": "Parallel (2)",
+                                                                        "StartAt": "CheckLanguageScore",
                                                                         "States": {
-                                                                            "Parallel (2)": {
+                                                                            "CheckLanguageScore": {
+                                                                                "Type": "Choice",
+                                                                                "Choices": [
+                                                                                    {
+                                                                                        "Variable": "$.score",
+                                                                                        "NumericGreaterThan": 0,
+                                                                                        "Next": "ComprehendOperationsAndPass"
+                                                                                    }
+                                                                                ],
+                                                                                "Default": "InValidLanguageScore"
+                                                                            },
+                                                                            "ComprehendOperationsAndPass": {
                                                                                 "Type": "Parallel",
-                                                                                "End": true,
                                                                                 "Branches": [
                                                                                     {
-                                                                                        "StartAt": "DetectEntities",
+                                                                                        "StartAt": "PassThroughDetectDominantLanguageResult",
                                                                                         "States": {
-                                                                                            "DetectEntities": {
-                                                                                                "Type": "Task",
-                                                                                                "End": true,
-                                                                                                "Parameters": {
-                                                                                                    "LanguageCode.$": "$.LanguageCode",
-                                                                                                    "Text.$": "$.Text"
-                                                                                                },
-                                                                                                "Resource": "arn:aws:states:::aws-sdk:comprehend:detectEntities"
-                                                                                            }
-                                                                                        }
-                                                                                    },
-                                                                                    {
-                                                                                        "StartAt": "DetectKeyPhrases",
-                                                                                        "States": {
-                                                                                            "DetectKeyPhrases": {
-                                                                                                "Type": "Task",
-                                                                                                "End": true,
-                                                                                                "Parameters": {
-                                                                                                    "LanguageCode.$": "$.LanguageCode",
-                                                                                                    "Text.$": "$.Text"
-                                                                                                },
-                                                                                                "Resource": "arn:aws:states:::aws-sdk:comprehend:detectKeyPhrases"
-                                                                                            }
-                                                                                        }
-                                                                                    },
-                                                                                    {
-                                                                                        "StartAt": "DetectPiiEntities",
-                                                                                        "States": {
-                                                                                            "DetectPiiEntities": {
-                                                                                                "Type": "Task",
-                                                                                                "End": true,
-                                                                                                "Parameters": {
-                                                                                                    "LanguageCode.$": "$.LanguageCode",
-                                                                                                    "Text.$": "$.Text"
-                                                                                                },
-                                                                                                "Resource": "arn:aws:states:::aws-sdk:comprehend:detectPiiEntities"
-                                                                                            }
-                                                                                        }
-                                                                                    },
-                                                                                    {
-                                                                                        "StartAt": "DetectSentiment",
-                                                                                        "States": {
-                                                                                            "DetectSentiment": {
-                                                                                                "Type": "Task",
-                                                                                                "Parameters": {
-                                                                                                    "LanguageCode.$": "$.LanguageCode",
-                                                                                                    "Text.$": "$.Text"
-                                                                                                },
-                                                                                                "Resource": "arn:aws:states:::aws-sdk:comprehend:detectSentiment",
+                                                                                            "PassThroughDetectDominantLanguageResult": {
+                                                                                                "Type": "Pass",
                                                                                                 "End": true
                                                                                             }
                                                                                         }
                                                                                     },
                                                                                     {
-                                                                                        "StartAt": "DetectSyntax",
+                                                                                        "StartAt": "ParallelComprehendOperations",
                                                                                         "States": {
-                                                                                            "DetectSyntax": {
-                                                                                                "Type": "Task",
+                                                                                            "ParallelComprehendOperations": {
+                                                                                                "Type": "Parallel",
                                                                                                 "End": true,
-                                                                                                "Parameters": {
-                                                                                                    "LanguageCode.$": "$.LanguageCode",
-                                                                                                    "Text.$": "$.Text"
-                                                                                                },
-                                                                                                "Resource": "arn:aws:states:::aws-sdk:comprehend:detectSyntax"
+                                                                                                "Branches": [
+                                                                                                    {
+                                                                                                        "StartAt": "CheckSupportedLanguagesForEntities",
+                                                                                                        "States": {
+                                                                                                            "CheckSupportedLanguagesForEntities": {
+                                                                                                                "Type": "Choice",
+                                                                                                                "Choices": [
+                                                                                                                    {
+                                                                                                                        "Or": [
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "en"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "es"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "fr"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "de"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "it"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "pt"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "ar"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "hi"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "ja"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "ko"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "zh"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "zh-TW"
+                                                                                                                            }
+                                                                                                                        ],
+                                                                                                                        "Next": "DetectEntities"
+                                                                                                                    }
+                                                                                                                ],
+                                                                                                                "Default": "InvalidSupportedLanguagesForEntities"
+                                                                                                            },
+                                                                                                            "InvalidSupportedLanguagesForEntities": {
+                                                                                                                "Type": "Pass",
+                                                                                                                "End": true,
+                                                                                                                "Result": []
+                                                                                                            },
+                                                                                                            "DetectEntities": {
+                                                                                                                "Type": "Task",
+                                                                                                                "Parameters": {
+                                                                                                                    "LanguageCode.$": "$.languageCode",
+                                                                                                                    "Text.$": "$.text"
+                                                                                                                },
+                                                                                                                "Resource": "arn:aws:states:::aws-sdk:comprehend:detectEntities",
+                                                                                                                "Next": "ProcessDetectEntities"
+                                                                                                            },
+                                                                                                            "ProcessDetectEntities": {
+                                                                                                                "Type": "Map",
+                                                                                                                "ItemProcessor": {
+                                                                                                                    "ProcessorConfig": {
+                                                                                                                        "Mode": "INLINE"
+                                                                                                                    },
+                                                                                                                    "StartAt": "ProcessDetectEntity",
+                                                                                                                    "States": {
+                                                                                                                        "ProcessDetectEntity": {
+                                                                                                                            "Type": "Pass",
+                                                                                                                            "End": true
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                },
+                                                                                                                "End": true,
+                                                                                                                "ItemsPath": "$.Entities",
+                                                                                                                "ItemSelector": {
+                                                                                                                    "beginOffset.$": "$$.Map.Item.Value.BeginOffset",
+                                                                                                                    "endOffset.$": "$$.Map.Item.Value.EndOffset",
+                                                                                                                    "index.$": "$$.Map.Item.Index",
+                                                                                                                    "score.$": "$$.Map.Item.Value.Score",
+                                                                                                                    "text.$": "$$.Map.Item.Value.Text",
+                                                                                                                    "type.$": "$$.Map.Item.Value.Type"
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "StartAt": "CheckSupportedLanguagesForKeyPhrases",
+                                                                                                        "States": {
+                                                                                                            "CheckSupportedLanguagesForKeyPhrases": {
+                                                                                                                "Type": "Choice",
+                                                                                                                "Choices": [
+                                                                                                                    {
+                                                                                                                        "Or": [
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "en"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "es"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "fr"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "de"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "it"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "pt"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "ar"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "hi"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "ja"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "ko"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "zh"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "zh-TW"
+                                                                                                                            }
+                                                                                                                        ],
+                                                                                                                        "Next": "DetectKeyPhrases"
+                                                                                                                    }
+                                                                                                                ],
+                                                                                                                "Default": "InvalidSupportedLanguagesForKeyPhrases"
+                                                                                                            },
+                                                                                                            "InvalidSupportedLanguagesForKeyPhrases": {
+                                                                                                                "Type": "Pass",
+                                                                                                                "End": true,
+                                                                                                                "Result": []
+                                                                                                            },
+                                                                                                            "DetectKeyPhrases": {
+                                                                                                                "Type": "Task",
+                                                                                                                "Parameters": {
+                                                                                                                    "LanguageCode.$": "$.languageCode",
+                                                                                                                    "Text.$": "$.text"
+                                                                                                                },
+                                                                                                                "Resource": "arn:aws:states:::aws-sdk:comprehend:detectKeyPhrases",
+                                                                                                                "Next": "ProcessDetectKeyPhrases"
+                                                                                                            },
+                                                                                                            "ProcessDetectKeyPhrases": {
+                                                                                                                "Type": "Map",
+                                                                                                                "ItemProcessor": {
+                                                                                                                    "ProcessorConfig": {
+                                                                                                                        "Mode": "INLINE"
+                                                                                                                    },
+                                                                                                                    "StartAt": "ProcessDetectKeyPhrase",
+                                                                                                                    "States": {
+                                                                                                                        "ProcessDetectKeyPhrase": {
+                                                                                                                            "Type": "Pass",
+                                                                                                                            "End": true
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                },
+                                                                                                                "End": true,
+                                                                                                                "ItemsPath": "$.KeyPhrases",
+                                                                                                                "ItemSelector": {
+                                                                                                                    "beginOffset.$": "$$.Map.Item.Value.BeginOffset",
+                                                                                                                    "endOffset.$": "$$.Map.Item.Value.EndOffset",
+                                                                                                                    "index.$": "$$.Map.Item.Index",
+                                                                                                                    "score.$": "$$.Map.Item.Value.Score",
+                                                                                                                    "text.$": "$$.Map.Item.Value.Text"
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "StartAt": "CheckSupportedLanguagesForPII",
+                                                                                                        "States": {
+                                                                                                            "CheckSupportedLanguagesForPII": {
+                                                                                                                "Type": "Choice",
+                                                                                                                "Choices": [
+                                                                                                                    {
+                                                                                                                        "Or": [
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "en"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "es"
+                                                                                                                            }
+                                                                                                                        ],
+                                                                                                                        "Next": "DetectPiiEntities"
+                                                                                                                    }
+                                                                                                                ],
+                                                                                                                "Default": "InvalidSupportedLanguagesForPII"
+                                                                                                            },
+                                                                                                            "InvalidSupportedLanguagesForPII": {
+                                                                                                                "Type": "Pass",
+                                                                                                                "End": true,
+                                                                                                                "Result": []
+                                                                                                            },
+                                                                                                            "DetectPiiEntities": {
+                                                                                                                "Type": "Task",
+                                                                                                                "Parameters": {
+                                                                                                                    "LanguageCode.$": "$.languageCode",
+                                                                                                                    "Text.$": "$.text"
+                                                                                                                },
+                                                                                                                "Resource": "arn:aws:states:::aws-sdk:comprehend:detectPiiEntities",
+                                                                                                                "Next": "ProcessDetectPiiEntities"
+                                                                                                            },
+                                                                                                            "ProcessDetectPiiEntities": {
+                                                                                                                "Type": "Map",
+                                                                                                                "ItemProcessor": {
+                                                                                                                    "ProcessorConfig": {
+                                                                                                                        "Mode": "INLINE"
+                                                                                                                    },
+                                                                                                                    "StartAt": "ProcessDetectPiiEntity",
+                                                                                                                    "States": {
+                                                                                                                        "ProcessDetectPiiEntity": {
+                                                                                                                            "Type": "Pass",
+                                                                                                                            "End": true
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                },
+                                                                                                                "End": true,
+                                                                                                                "ItemsPath": "$.Entities",
+                                                                                                                "ItemSelector": {
+                                                                                                                    "beginOffset.$": "$$.Map.Item.Value.BeginOffset",
+                                                                                                                    "endOffset.$": "$$.Map.Item.Value.EndOffset",
+                                                                                                                    "index.$": "$$.Map.Item.Index",
+                                                                                                                    "score.$": "$$.Map.Item.Value.Score",
+                                                                                                                    "type.$": "$$.Map.Item.Value.Type"
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "StartAt": "CheckSupportedLanguagesForSentiment",
+                                                                                                        "States": {
+                                                                                                            "CheckSupportedLanguagesForSentiment": {
+                                                                                                                "Type": "Choice",
+                                                                                                                "Choices": [
+                                                                                                                    {
+                                                                                                                        "Or": [
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "en"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "es"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "fr"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "de"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "it"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "pt"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "ar"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "hi"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "ja"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "ko"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "zh"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "zh-TW"
+                                                                                                                            }
+                                                                                                                        ],
+                                                                                                                        "Next": "DetectSentiment"
+                                                                                                                    }
+                                                                                                                ],
+                                                                                                                "Default": "InvalidSupportedLanguagesForSentiment"
+                                                                                                            },
+                                                                                                            "InvalidSupportedLanguagesForSentiment": {
+                                                                                                                "Type": "Pass",
+                                                                                                                "End": true,
+                                                                                                                "Result": {
+                                                                                                                    "sentiment": null,
+                                                                                                                    "sentimentScore": {}
+                                                                                                                }
+                                                                                                            },
+                                                                                                            "DetectSentiment": {
+                                                                                                                "Type": "Task",
+                                                                                                                "Parameters": {
+                                                                                                                    "LanguageCode.$": "$.languageCode",
+                                                                                                                    "Text.$": "$.text"
+                                                                                                                },
+                                                                                                                "Resource": "arn:aws:states:::aws-sdk:comprehend:detectSentiment",
+                                                                                                                "End": true,
+                                                                                                                "ResultSelector": {
+                                                                                                                    "sentiment.$": "$.Sentiment",
+                                                                                                                    "sentimentScore": {
+                                                                                                                        "mixed.$": "$.SentimentScore.Mixed",
+                                                                                                                        "negative.$": "$.SentimentScore.Negative",
+                                                                                                                        "neutral.$": "$.SentimentScore.Neutral",
+                                                                                                                        "positive.$": "$.SentimentScore.Positive"
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "StartAt": "CheckContentLengthForSyntax",
+                                                                                                        "States": {
+                                                                                                            "CheckContentLengthForSyntax": {
+                                                                                                                "Type": "Choice",
+                                                                                                                "Choices": [
+                                                                                                                    {
+                                                                                                                        "Variable": "$.contentLength",
+                                                                                                                        "NumericLessThanEquals": 5120,
+                                                                                                                        "Next": "CheckSupportedLanguagesForSyntax"
+                                                                                                                    }
+                                                                                                                ],
+                                                                                                                "Default": "InvalidContentLengthForSyntax"
+                                                                                                            },
+                                                                                                            "InvalidContentLengthForSyntax": {
+                                                                                                                "Type": "Pass",
+                                                                                                                "End": true,
+                                                                                                                "Result": []
+                                                                                                            },
+                                                                                                            "CheckSupportedLanguagesForSyntax": {
+                                                                                                                "Type": "Choice",
+                                                                                                                "Choices": [
+                                                                                                                    {
+                                                                                                                        "Or": [
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "en"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "es"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "fr"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "de"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "it"
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "pt"
+                                                                                                                            }
+                                                                                                                        ],
+                                                                                                                        "Next": "DetectSyntaxTokens"
+                                                                                                                    }
+                                                                                                                ],
+                                                                                                                "Default": "InvalidSupportedLanguagesForSyntax"
+                                                                                                            },
+                                                                                                            "InvalidSupportedLanguagesForSyntax": {
+                                                                                                                "Type": "Pass",
+                                                                                                                "End": true,
+                                                                                                                "Result": []
+                                                                                                            },
+                                                                                                            "DetectSyntaxTokens": {
+                                                                                                                "Type": "Task",
+                                                                                                                "Parameters": {
+                                                                                                                    "LanguageCode.$": "$.languageCode",
+                                                                                                                    "Text.$": "$.text"
+                                                                                                                },
+                                                                                                                "Resource": "arn:aws:states:::aws-sdk:comprehend:detectSyntax",
+                                                                                                                "Next": "ProcessDetectSyntaxTokens"
+                                                                                                            },
+                                                                                                            "ProcessDetectSyntaxTokens": {
+                                                                                                                "Type": "Map",
+                                                                                                                "ItemProcessor": {
+                                                                                                                    "ProcessorConfig": {
+                                                                                                                        "Mode": "INLINE"
+                                                                                                                    },
+                                                                                                                    "StartAt": "ProcessDetectSyntaxToken",
+                                                                                                                    "States": {
+                                                                                                                        "ProcessDetectSyntaxToken": {
+                                                                                                                            "Type": "Pass",
+                                                                                                                            "End": true
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                },
+                                                                                                                "End": true,
+                                                                                                                "ItemsPath": "$.SyntaxTokens",
+                                                                                                                "ItemSelector": {
+                                                                                                                    "beginOffset.$": "$$.Map.Item.Value.BeginOffset",
+                                                                                                                    "endOffset.$": "$$.Map.Item.Value.EndOffset",
+                                                                                                                    "index.$": "$$.Map.Item.Index",
+                                                                                                                    "partOfSpeech": {
+                                                                                                                        "score.$": "$$.Map.Item.Value.PartOfSpeech.Score",
+                                                                                                                        "tag.$": "$$.Map.Item.Value.PartOfSpeech.Tag"
+                                                                                                                    },
+                                                                                                                    "text.$": "$$.Map.Item.Value.Text",
+                                                                                                                    "tokenId.$": "$$.Map.Item.Value.TokenId"
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "StartAt": "CheckContentLengthForTargetedSentiment",
+                                                                                                        "States": {
+                                                                                                            "CheckContentLengthForTargetedSentiment": {
+                                                                                                                "Type": "Choice",
+                                                                                                                "Choices": [
+                                                                                                                    {
+                                                                                                                        "Variable": "$.contentLength",
+                                                                                                                        "NumericLessThanEquals": 5120,
+                                                                                                                        "Next": "CheckSupportedLanguagesForTargetedSentiment"
+                                                                                                                    }
+                                                                                                                ],
+                                                                                                                "Default": "InvalidContentLengthForTargetedSentiment"
+                                                                                                            },
+                                                                                                            "InvalidContentLengthForTargetedSentiment": {
+                                                                                                                "Type": "Pass",
+                                                                                                                "End": true,
+                                                                                                                "Result": []
+                                                                                                            },
+                                                                                                            "CheckSupportedLanguagesForTargetedSentiment": {
+                                                                                                                "Type": "Choice",
+                                                                                                                "Choices": [
+                                                                                                                    {
+                                                                                                                        "Or": [
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "en"
+                                                                                                                            }
+                                                                                                                        ],
+                                                                                                                        "Next": "DetectTargetedSentiment"
+                                                                                                                    }
+                                                                                                                ],
+                                                                                                                "Default": "InvalidSupportedLanguagesForTargetedSentiment"
+                                                                                                            },
+                                                                                                            "InvalidSupportedLanguagesForTargetedSentiment": {
+                                                                                                                "Type": "Pass",
+                                                                                                                "End": true,
+                                                                                                                "Result": []
+                                                                                                            },
+                                                                                                            "DetectTargetedSentiment": {
+                                                                                                                "Type": "Task",
+                                                                                                                "Parameters": {
+                                                                                                                    "LanguageCode.$": "$.languageCode",
+                                                                                                                    "Text.$": "$.text"
+                                                                                                                },
+                                                                                                                "Resource": "arn:aws:states:::aws-sdk:comprehend:detectTargetedSentiment",
+                                                                                                                "Next": "ProcessDetectTargetedSentiment"
+                                                                                                            },
+                                                                                                            "ProcessDetectTargetedSentiment": {
+                                                                                                                "Type": "Map",
+                                                                                                                "ItemProcessor": {
+                                                                                                                    "ProcessorConfig": {
+                                                                                                                        "Mode": "INLINE"
+                                                                                                                    },
+                                                                                                                    "StartAt": "ParallelDescriptiveMentionIndexAndMentions",
+                                                                                                                    "States": {
+                                                                                                                        "ParallelDescriptiveMentionIndexAndMentions": {
+                                                                                                                            "Type": "Parallel",
+                                                                                                                            "End": true,
+                                                                                                                            "Branches": [
+                                                                                                                                {
+                                                                                                                                    "StartAt": "ProcessDescriptiveMentionIndexes",
+                                                                                                                                    "States": {
+                                                                                                                                        "ProcessDescriptiveMentionIndexes": {
+                                                                                                                                            "Type": "Map",
+                                                                                                                                            "ItemProcessor": {
+                                                                                                                                                "ProcessorConfig": {
+                                                                                                                                                    "Mode": "INLINE"
+                                                                                                                                                },
+                                                                                                                                                "StartAt": "ProcessDescriptiveMentionIndex",
+                                                                                                                                                "States": {
+                                                                                                                                                    "ProcessDescriptiveMentionIndex": {
+                                                                                                                                                        "Type": "Pass",
+                                                                                                                                                        "End": true
+                                                                                                                                                    }
+                                                                                                                                                }
+                                                                                                                                            },
+                                                                                                                                            "End": true,
+                                                                                                                                            "ItemsPath": "$.descriptiveMentionIndex",
+                                                                                                                                            "ItemSelector": {
+                                                                                                                                                "index.$": "$$.Map.Item.Index",
+                                                                                                                                                "value.$": "$$.Map.Item.Value"
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "StartAt": "ProcessTargetedSentimentMentions",
+                                                                                                                                    "States": {
+                                                                                                                                        "ProcessTargetedSentimentMentions": {
+                                                                                                                                            "Type": "Map",
+                                                                                                                                            "ItemProcessor": {
+                                                                                                                                                "ProcessorConfig": {
+                                                                                                                                                    "Mode": "INLINE"
+                                                                                                                                                },
+                                                                                                                                                "StartAt": "ProcessTargetedSentimentMention",
+                                                                                                                                                "States": {
+                                                                                                                                                    "ProcessTargetedSentimentMention": {
+                                                                                                                                                        "Type": "Pass",
+                                                                                                                                                        "End": true
+                                                                                                                                                    }
+                                                                                                                                                }
+                                                                                                                                            },
+                                                                                                                                            "End": true,
+                                                                                                                                            "ItemsPath": "$.mentions",
+                                                                                                                                            "ItemSelector": {
+                                                                                                                                                "beginOffset.$": "$$.Map.Item.Value.BeginOffset",
+                                                                                                                                                "endOffset.$": "$$.Map.Item.Value.EndOffset",
+                                                                                                                                                "groupScore.$": "$$.Map.Item.Value.GroupScore",
+                                                                                                                                                "index.$": "$$.Map.Item.Index",
+                                                                                                                                                "mentionSentiment": {
+                                                                                                                                                    "sentiment.$": "$$.Map.Item.Value.MentionSentiment.Sentiment",
+                                                                                                                                                    "sentimentScore": {
+                                                                                                                                                        "mixed.$": "$$.Map.Item.Value.MentionSentiment.SentimentScore.Mixed",
+                                                                                                                                                        "negative.$": "$$.Map.Item.Value.MentionSentiment.SentimentScore.Negative",
+                                                                                                                                                        "neutral.$": "$$.Map.Item.Value.MentionSentiment.SentimentScore.Neutral",
+                                                                                                                                                        "positive.$": "$$.Map.Item.Value.MentionSentiment.SentimentScore.Positive"
+                                                                                                                                                    }
+                                                                                                                                                },
+                                                                                                                                                "score.$": "$$.Map.Item.Value.Score",
+                                                                                                                                                "text.$": "$$.Map.Item.Value.Text",
+                                                                                                                                                "type.$": "$$.Map.Item.Value.Type"
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            ],
+                                                                                                                            "ResultSelector": {
+                                                                                                                                "descriptiveMentionIndex.$": "$[0]",
+                                                                                                                                "mentions.$": "$[1]"
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                },
+                                                                                                                "End": true,
+                                                                                                                "ItemsPath": "$.Entities",
+                                                                                                                "ItemSelector": {
+                                                                                                                    "descriptiveMentionIndex.$": "$$.Map.Item.Value.DescriptiveMentionIndex",
+                                                                                                                    "index.$": "$$.Map.Item.Index",
+                                                                                                                    "mentions.$": "$$.Map.Item.Value.Mentions"
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "StartAt": "CheckContentLengthForToxicContent",
+                                                                                                        "States": {
+                                                                                                            "CheckContentLengthForToxicContent": {
+                                                                                                                "Type": "Choice",
+                                                                                                                "Choices": [
+                                                                                                                    {
+                                                                                                                        "Variable": "$.contentLength",
+                                                                                                                        "NumericLessThanEquals": 1024,
+                                                                                                                        "Next": "CheckSupportedLanguagesForToxicContent"
+                                                                                                                    }
+                                                                                                                ],
+                                                                                                                "Default": "InvalidContentLengthForToxicContent"
+                                                                                                            },
+                                                                                                            "InvalidContentLengthForToxicContent": {
+                                                                                                                "Type": "Pass",
+                                                                                                                "End": true,
+                                                                                                                "Result": []
+                                                                                                            },
+                                                                                                            "CheckSupportedLanguagesForToxicContent": {
+                                                                                                                "Type": "Choice",
+                                                                                                                "Choices": [
+                                                                                                                    {
+                                                                                                                        "Or": [
+                                                                                                                            {
+                                                                                                                                "Variable": "$.languageCode",
+                                                                                                                                "StringEquals": "en"
+                                                                                                                            }
+                                                                                                                        ],
+                                                                                                                        "Next": "DetectToxicContent"
+                                                                                                                    }
+                                                                                                                ],
+                                                                                                                "Default": "InvalidSupportedLanguagesForToxicContent"
+                                                                                                            },
+                                                                                                            "InvalidSupportedLanguagesForToxicContent": {
+                                                                                                                "Type": "Pass",
+                                                                                                                "End": true,
+                                                                                                                "Result": []
+                                                                                                            },
+                                                                                                            "DetectToxicContent": {
+                                                                                                                "Type": "Task",
+                                                                                                                "Parameters": {
+                                                                                                                    "LanguageCode.$": "$.languageCode",
+                                                                                                                    "TextSegments": [
+                                                                                                                        {
+                                                                                                                            "Text.$": "$.text"
+                                                                                                                        }
+                                                                                                                    ]
+                                                                                                                },
+                                                                                                                "Resource": "arn:aws:states:::aws-sdk:comprehend:detectToxicContent",
+                                                                                                                "Next": "Map"
+                                                                                                            },
+                                                                                                            "Map": {
+                                                                                                                "Type": "Map",
+                                                                                                                "ItemProcessor": {
+                                                                                                                    "ProcessorConfig": {
+                                                                                                                        "Mode": "INLINE"
+                                                                                                                    },
+                                                                                                                    "StartAt": "Pass",
+                                                                                                                    "States": {
+                                                                                                                        "Pass": {
+                                                                                                                            "Type": "Pass",
+                                                                                                                            "End": true
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                },
+                                                                                                                "End": true,
+                                                                                                                "ItemsPath": "$.ResultList"
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                ],
+                                                                                                "ResultSelector": {
+                                                                                                    "entities.$": "$[0]",
+                                                                                                    "keyPhrases.$": "$[1]",
+                                                                                                    "piiEntities.$": "$[2]",
+                                                                                                    "sentiment.$": "$[3]",
+                                                                                                    "syntaxTokens.$": "$[4]",
+                                                                                                    "targetedSentiment.$": "$[5]",
+                                                                                                    "toxicContent.$": "$[6]"
+                                                                                                }
                                                                                             }
                                                                                         }
                                                                                     }
-                                                                                ]
+                                                                                ],
+                                                                                "End": true,
+                                                                                "ResultSelector": {
+                                                                                    "entities.$": "$[1].entities",
+                                                                                    "keyPhrases.$": "$[1].keyPhrases",
+                                                                                    "languageCode.$": "$[0].languageCode",
+                                                                                    "languageCodeScore.$": "$[0].score",
+                                                                                    "piiEntities.$": "$[1].piiEntities",
+                                                                                    "sentiment.$": "$[1].sentiment",
+                                                                                    "syntaxTokens.$": "$[1].syntaxTokens",
+                                                                                    "targetedSentiment.$": "$[1].targetedSentiment",
+                                                                                    "toxicContent.$": "$[1].toxicContent"
+                                                                                }
+                                                                            },
+                                                                            "InValidLanguageScore": {
+                                                                                "Type": "Pass",
+                                                                                "End": true
                                                                             }
                                                                         }
                                                                     },
                                                                     "End": true,
                                                                     "ItemsPath": "$.comprehend.Languages",
                                                                     "ItemSelector": {
-                                                                        "Index.$": "$$.Map.Item.Index",
-                                                                        "LanguageCode.$": "$$.Map.Item.Value.LanguageCode",
-                                                                        "Score.$": "$$.Map.Item.Value.Score",
-                                                                        "Text.$": "$.s3.object.body"
+                                                                        "contentLength.$": "$.s3.object.contentLength",
+                                                                        "index.$": "$$.Map.Item.Index",
+                                                                        "languageCode.$": "$$.Map.Item.Value.LanguageCode",
+                                                                        "score.$": "$$.Map.Item.Value.Score",
+                                                                        "text.$": "$.s3.object.body"
                                                                     }
                                                                 }
                                                             }
                                                         }
                                                     ],
-                                                    "End": true
-                                                },
-                                                "Pass (2)": {
-                                                    "Type": "Pass",
-                                                    "End": true
+                                                    "End": true,
+                                                    "ResultSelector": {
+                                                        "awsRegion.$": "$[0].awsRegion",
+                                                        "comprehend.$": "$[1]",
+                                                        "eventName.$": "$[0].eventName",
+                                                        "eventSource.$": "$[0].eventSource",
+                                                        "eventTime.$": "$[0].eventTime",
+                                                        "eventVersion.$": "$[0].eventVersion",
+                                                        "requestParameters.$": "$[0].requestParameters",
+                                                        "s3.$": "$[0].s3",
+                                                        "userIdentity.$": "$[0].userIdentity"
+                                                    }
                                                 }
                                             }
                                         },
