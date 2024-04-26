@@ -11,6 +11,19 @@ data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_text" {
   }
 }
 
+data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_comprehend" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    effect = "Allow"
+    principals {
+      identifiers = ["states.amazonaws.com"]
+      type        = "Service"
+    }
+  }
+}
+
 data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_text" {
   statement {
     actions = [
@@ -43,6 +56,19 @@ data "aws_iam_policy_document" "pipes_pipe_s3_object_created_text" {
     effect = "Allow"
     resources = [
       aws_sfn_state_machine.s3_object_created_text.arn
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "sfn_state_machine_s3_object_created_comprehend" {
+  statement {
+    actions = [
+      "S3:GetObject",
+      "S3:GetObjectVersion"
+    ]
+    effect = "Allow"
+    resources = [
+      "${aws_s3_bucket.main.arn}/${aws_s3_object.comprehend.key}*"
     ]
   }
 }
