@@ -61,6 +61,16 @@ data "aws_iam_policy_document" "sfn_state_machine_s3_object_created_text" {
 
   statement {
     actions = [
+      "S3:PutObject"
+    ]
+    effect = "Allow"
+    resources = [
+      "${aws_s3_bucket.main.arn}/${aws_s3_object.comprehend.key}*"
+    ]
+  }
+
+  statement {
+    actions = [
       "comprehend:DetectDominantLanguage",
       "comprehend:DetectEntities",
       "comprehend:DetectKeyPhrases",
