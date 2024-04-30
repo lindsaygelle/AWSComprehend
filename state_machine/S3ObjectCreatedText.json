@@ -124,9 +124,9 @@
                                                             "Next": "ParallelComprehendAndPass"
                                                         }
                                                     ],
-                                                    "Default": "Pass (2)"
+                                                    "Default": "InvaildContentLengthForComprehend"
                                                 },
-                                                "Pass (2)": {
+                                                "InvaildContentLengthForComprehend": {
                                                     "Type": "Pass",
                                                     "End": true
                                                 },
@@ -526,7 +526,12 @@
                                                                                                                 "End": true,
                                                                                                                 "Result": {
                                                                                                                     "sentiment": null,
-                                                                                                                    "sentimentScore": {}
+                                                                                                                    "sentimentScore": {
+                                                                                                                        "mixed": 0,
+                                                                                                                        "negative": 0,
+                                                                                                                        "neutral": 0,
+                                                                                                                        "positive": 0
+                                                                                                                    }
                                                                                                                 }
                                                                                                             },
                                                                                                             "DetectSentiment": {

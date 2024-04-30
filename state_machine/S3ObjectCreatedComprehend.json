@@ -99,7 +99,7 @@
                                                             "bucket.$": "$[0].s3.bucket",
                                                             "configurationId.$": "$[0].s3.configurationId",
                                                             "object": {
-                                                                "body.$": "$[1].Body",
+                                                                "body.$": "States.StringToJson($[1].Body)",
                                                                 "acceptRanges.$": "$[1].AcceptRanges",
                                                                 "contentLength.$": "$[1].ContentLength",
                                                                 "contentType.$": "$[1].ContentType",
@@ -113,11 +113,35 @@
                                                         },
                                                         "userIdentity.$": "$[0].userIdentity"
                                                     },
-                                                    "Next": "Pass (2)"
+                                                    "Next": "ProcessComprehendRecords"
                                                 },
-                                                "Pass (2)": {
-                                                    "Type": "Pass",
-                                                    "End": true
+                                                "ProcessComprehendRecords": {
+                                                    "Type": "Map",
+                                                    "ItemProcessor": {
+                                                        "ProcessorConfig": {
+                                                            "Mode": "INLINE"
+                                                        },
+                                                        "StartAt": "ParallelProcessComprehendRecord",
+                                                        "States": {
+                                                            "ParallelProcessComprehendRecord": {
+                                                                "Type": "Parallel",
+                                                                "End": true,
+                                                                "Branches": [
+                                                                    {
+                                                                        "StartAt": "Pass",
+                                                                        "States": {
+                                                                            "Pass": {
+                                                                                "Type": "Pass",
+                                                                                "End": true
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        }
+                                                    },
+                                                    "End": true,
+                                                    "ItemsPath": "$.s3.object.body.comprehend"
                                                 }
                                             }
                                         },
