@@ -74,9 +74,9 @@
                                                             }
                                                         },
                                                         {
-                                                            "StartAt": "GetObject",
+                                                            "StartAt": "S3GetObject",
                                                             "States": {
-                                                                "GetObject": {
+                                                                "S3GetObject": {
                                                                     "Type": "Task",
                                                                     "End": true,
                                                                     "Parameters": {
@@ -124,9 +124,9 @@
                                                             "Next": "ParallelComprehendAndPass"
                                                         }
                                                     ],
-                                                    "Default": "Pass (2)"
+                                                    "Default": "InvaildContentLengthForComprehend"
                                                 },
-                                                "Pass (2)": {
+                                                "InvaildContentLengthForComprehend": {
                                                     "Type": "Pass",
                                                     "End": true
                                                 },
@@ -526,7 +526,12 @@
                                                                                                                 "End": true,
                                                                                                                 "Result": {
                                                                                                                     "sentiment": null,
-                                                                                                                    "sentimentScore": {}
+                                                                                                                    "sentimentScore": {
+                                                                                                                        "mixed": 0,
+                                                                                                                        "negative": 0,
+                                                                                                                        "neutral": 0,
+                                                                                                                        "positive": 0
+                                                                                                                    }
                                                                                                                 }
                                                                                                             },
                                                                                                             "DetectSentiment": {
@@ -908,7 +913,6 @@
                                                             }
                                                         }
                                                     ],
-                                                    "End": true,
                                                     "ResultSelector": {
                                                         "awsRegion.$": "$[0].awsRegion",
                                                         "comprehend.$": "$[1]",
@@ -919,7 +923,54 @@
                                                         "requestParameters.$": "$[0].requestParameters",
                                                         "s3.$": "$[0].s3",
                                                         "userIdentity.$": "$[0].userIdentity"
-                                                    }
+                                                    },
+                                                    "Next": "S3PutObjectAndPass"
+                                                },
+                                                "S3PutObjectAndPass": {
+                                                    "Type": "Parallel",
+                                                    "End": true,
+                                                    "Branches": [
+                                                        {
+                                                            "StartAt": "S3PutObject",
+                                                            "States": {
+                                                                "S3PutObject": {
+                                                                    "Type": "Task",
+                                                                    "End": true,
+                                                                    "Parameters": {
+                                                                        "Body": {
+                                                                            "awsRegion.$": "$.awsRegion",
+                                                                            "comprehend.$": "$.comprehend",
+                                                                            "createdAt.$": "$$.State.EnteredTime",
+                                                                            "eventName.$": "$.eventName",
+                                                                            "eventSource.$": "$.eventSource",
+                                                                            "eventTime.$": "$.eventTime",
+                                                                            "eventVersion.$": "$.eventVersion",
+                                                                            "requestParameters.$": "$.requestParameters",
+                                                                            "s3": {
+                                                                                "bucket.$": "$.s3.bucket",
+                                                                                "object": {
+                                                                                    "acceptRanges.$": "$.s3.object.acceptRanges",
+                                                                                    "contentLength.$": "$.s3.object.contentLength",
+                                                                                    "contentType.$": "$.s3.object.contentType",
+                                                                                    "eTag.$": "$.s3.object.eTag",
+                                                                                    "key.$": "$.s3.object.key",
+                                                                                    "lastModified.$": "$.s3.object.lastModified",
+                                                                                    "metadata.$": "$.s3.object.metadata",
+                                                                                    "serverSideEncryption.$": "$.s3.object.serverSideEncryption"
+                                                                                },
+                                                                                "s3SchemaVersion.$": "$.s3.s3SchemaVersion"
+                                                                            },
+                                                                            "text.$": "$.s3.object.body",
+                                                                            "userIdentity.$": "$.userIdentity"
+                                                                        },
+                                                                        "Bucket.$": "$.s3.bucket.name",
+                                                                        "Key.$": "States.Format('${aws_s3_object_key}{}.json', $.s3.object.eTag)"
+                                                                    },
+                                                                    "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
                                                 }
                                             }
                                         },
