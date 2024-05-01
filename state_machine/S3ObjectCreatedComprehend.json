@@ -128,11 +128,45 @@
                                                                 "End": true,
                                                                 "Branches": [
                                                                     {
-                                                                        "StartAt": "Pass",
+                                                                        "StartAt": "ProcessComprehendEntities",
                                                                         "States": {
-                                                                            "Pass": {
-                                                                                "Type": "Pass",
-                                                                                "End": true
+                                                                            "ProcessComprehendEntities": {
+                                                                                "Type": "Map",
+                                                                                "ItemProcessor": {
+                                                                                    "ProcessorConfig": {
+                                                                                        "Mode": "INLINE"
+                                                                                    },
+                                                                                    "StartAt": "ProcessComprehendEntity",
+                                                                                    "States": {
+                                                                                        "ProcessComprehendEntity": {
+                                                                                            "Type": "Pass",
+                                                                                            "End": true
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                "End": true,
+                                                                                "ItemSelector": {
+                                                                                    "comprehendId.$": "$.comprehend.id",
+                                                                                    "createdAt.$": "$.createdAt",
+                                                                                    "entity": {
+                                                                                        "beginOffset.$": "$$.Map.Item.Value.beginOffset",
+                                                                                        "comprehendId.$": "$.comprehend.id",
+                                                                                        "createdAt.$": "$.createdAt",
+                                                                                        "endOffset.$": "$$.Map.Item.Value.endOffset",
+                                                                                        "index.$": "$$.Map.Item.Value.index",
+                                                                                        "languageCode.$": "$.comprehend.languageCode",
+                                                                                        "languageCodeScore.$": "$.comprehend.languageCodeScore",
+                                                                                        "score.$": "$$.Map.Item.Value.score",
+                                                                                        "text.$": "$$.Map.Item.Value.text",
+                                                                                        "type.$": "$$.Map.Item.Value.type"
+                                                                                    },
+                                                                                    "language": {
+                                                                                        "code.$": "$.comprehend.languageCode",
+                                                                                        "codeScore.$": "$.comprehend.languageCodeScore"
+                                                                                    },
+                                                                                    "s3.$": "$.s3"
+                                                                                },
+                                                                                "ItemsPath": "$.comprehend.entities"
                                                                             }
                                                                         }
                                                                     }
@@ -141,7 +175,23 @@
                                                         }
                                                     },
                                                     "End": true,
-                                                    "ItemsPath": "$.s3.object.body.comprehend"
+                                                    "ItemsPath": "$.s3.object.body.comprehend",
+                                                    "ItemSelector": {
+                                                        "createdAt.$": "$.s3.object.body.createdAt",
+                                                        "comprehend": {
+                                                            "entities.$": "$$.Map.Item.Value.entities",
+                                                            "id.$": "$.s3.object.body.s3.object.eTag",
+                                                            "keyPhrases.$": "$$.Map.Item.Value.keyPhrases",
+                                                            "languageCode.$": "$$.Map.Item.Value.languageCode",
+                                                            "languageCodeScore.$": "$$.Map.Item.Value.languageCodeScore",
+                                                            "piiEntities.$": "$$.Map.Item.Value.piiEntities",
+                                                            "sentiment.$": "$$.Map.Item.Value.sentiment",
+                                                            "syntaxTokens.$": "$$.Map.Item.Value.syntaxTokens",
+                                                            "targetedSentiment.$": "$$.Map.Item.Value.targetedSentiment",
+                                                            "toxicContent.$": "$$.Map.Item.Value.toxicContent"
+                                                        },
+                                                        "s3.$": "$.s3"
+                                                    }
                                                 }
                                             }
                                         },
