@@ -1,7 +1,6 @@
 # AWS Comprehend
 This project provides an event-driven architecture for analyzing user-submitted text using AWS Comprehend and exposing the processed data through a RESTful API gateway.
-Users can submit a block of text, and the system will store the raw text in S3, process it using AWS Comprehend, store the analyzed data in DynamoDB,
-and then expose the data sets through the provided API Gateway endpoints.
+Users can submit a block of text, and the system will store the raw text in S3, process it using AWS Comprehend, store the analyzed data in DynamoDB, and then expose the data sets through the provided API Gateway endpoints.
 The infrastructure is hosted on AWS, leveraging various services to create a scalable and serverless solution.
 
 
@@ -30,7 +29,7 @@ This will help prevent duplicate effort and ensure that your contributions are m
 
 Please refer to the [CONTRIBUTING.md](./CONTRIBUTING.md) file for more detailed guidelines on contributing to this project.
 
-We appreciate your contributions and look forward to working together to make this[AWS Comprehend](https://www.github.com/lindsaygelle/AWSComprehend) project even better!
+We appreciate your contributions and look forward to working together to make this [AWS Comprehend](https://www.github.com/lindsaygelle/AWSComprehend) project even better!
 
 # License
 [AWSComprehend](https://www.github.com/lindsaygelle/AWSComprehend) is licensed under the [MIT License](https://en.wikipedia.org/wiki/MIT_License). Feel free to use, modify, and distribute the code within this repository as per the terms of the license.
