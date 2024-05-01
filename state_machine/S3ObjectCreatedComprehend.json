@@ -136,12 +136,8 @@
                                                                                     "ProcessorConfig": {
                                                                                         "Mode": "INLINE"
                                                                                     },
-                                                                                    "StartAt": "ProcessComprehendEntity",
+                                                                                    "StartAt": "PutObjectComprehendEntity",
                                                                                     "States": {
-                                                                                        "ProcessComprehendEntity": {
-                                                                                            "Type": "Pass",
-                                                                                            "Next": "PutObjectComprehendEntity"
-                                                                                        },
                                                                                         "PutObjectComprehendEntity": {
                                                                                             "Type": "Task",
                                                                                             "Parameters": {
@@ -172,6 +168,92 @@
                                                                                     "s3.$": "$.s3"
                                                                                 },
                                                                                 "ItemsPath": "$.comprehend.entities"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "StartAt": "ProcessComprehendKeyPhrases",
+                                                                        "States": {
+                                                                            "ProcessComprehendKeyPhrases": {
+                                                                                "Type": "Map",
+                                                                                "ItemProcessor": {
+                                                                                    "ProcessorConfig": {
+                                                                                        "Mode": "INLINE"
+                                                                                    },
+                                                                                    "StartAt": "PutObjectComprehendKeyPhrase",
+                                                                                    "States": {
+                                                                                        "PutObjectComprehendKeyPhrase": {
+                                                                                            "Type": "Task",
+                                                                                            "End": true,
+                                                                                            "Parameters": {
+                                                                                                "Body.$": "$.keyPhrase",
+                                                                                                "Bucket.$": "$.s3.bucket.name",
+                                                                                                "Key.$": "States.Format('${aws_s3_object_key}comprehend/model=key_phrase/language_code={}/comprehend={}/{}.json', $.keyPhrase.languageCode, $.keyPhrase.comprehendId, $.keyPhrase.id)"
+                                                                                            },
+                                                                                            "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                "End": true,
+                                                                                "ItemsPath": "$.comprehend.keyPhrases",
+                                                                                "ItemSelector": {
+                                                                                    "keyPhrase": {
+                                                                                        "beginOffset.$": "$$.Map.Item.Value.beginOffset",
+                                                                                        "comprehendId.$": "$.comprehend.id",
+                                                                                        "createdAt.$": "$.createdAt",
+                                                                                        "endOffset.$": "$$.Map.Item.Value.endOffset",
+                                                                                        "id.$": "States.Hash($$.Map.Item.Value, 'MD5')",
+                                                                                        "index.$": "$$.Map.Item.Value.index",
+                                                                                        "languageCode.$": "$.comprehend.languageCode",
+                                                                                        "languageCodeScore.$": "$.comprehend.languageCodeScore",
+                                                                                        "score.$": "$$.Map.Item.Value.score",
+                                                                                        "text.$": "$$.Map.Item.Value.text"
+                                                                                    },
+                                                                                    "s3.$": "$.s3"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "StartAt": "ProcessComprehendPiiEntities",
+                                                                        "States": {
+                                                                            "ProcessComprehendPiiEntities": {
+                                                                                "Type": "Map",
+                                                                                "ItemProcessor": {
+                                                                                    "ProcessorConfig": {
+                                                                                        "Mode": "INLINE"
+                                                                                    },
+                                                                                    "StartAt": "PutObjectComprehendPiiEntity",
+                                                                                    "States": {
+                                                                                        "PutObjectComprehendPiiEntity": {
+                                                                                            "Type": "Task",
+                                                                                            "Parameters": {
+                                                                                                "Body.$": "$.piiEntity",
+                                                                                                "Bucket.$": "$.s3.bucket.name",
+                                                                                                "Key.$": "States.Format('${aws_s3_object_key}comprehend/model=pii_entity/language_code={}/type={}/comprehend={}/{}.json', $.piiEntity.languageCode, $.piiEntity.type, $.piiEntity.comprehendId, $.piiEntity.id)"
+                                                                                            },
+                                                                                            "Resource": "arn:aws:states:::aws-sdk:s3:putObject",
+                                                                                            "End": true
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                "End": true,
+                                                                                "ItemSelector": {
+                                                                                    "piiEntity": {
+                                                                                        "beginOffset.$": "$$.Map.Item.Value.beginOffset",
+                                                                                        "comprehendId.$": "$.comprehend.id",
+                                                                                        "createdAt.$": "$.createdAt",
+                                                                                        "endOffset.$": "$$.Map.Item.Value.endOffset",
+                                                                                        "id.$": "States.Hash($$.Map.Item.Value, 'MD5')",
+                                                                                        "index.$": "$$.Map.Item.Value.index",
+                                                                                        "languageCode.$": "$.comprehend.languageCode",
+                                                                                        "languageCodeScore.$": "$.comprehend.languageCodeScore",
+                                                                                        "score.$": "$$.Map.Item.Value.score",
+                                                                                        "type.$": "$$.Map.Item.Value.type"
+                                                                                    },
+                                                                                    "s3.$": "$.s3"
+                                                                                },
+                                                                                "ItemsPath": "$.comprehend.piiEntities"
                                                                             }
                                                                         }
                                                                     }
