@@ -140,29 +140,34 @@
                                                                                     "States": {
                                                                                         "ProcessComprehendEntity": {
                                                                                             "Type": "Pass",
+                                                                                            "Next": "PutObjectComprehendEntity"
+                                                                                        },
+                                                                                        "PutObjectComprehendEntity": {
+                                                                                            "Type": "Task",
+                                                                                            "Parameters": {
+                                                                                                "Body.$": "$.entity",
+                                                                                                "Bucket.$": "$.s3.bucket.name",
+                                                                                                "Key.$": "States.Format('${aws_s3_object_key}comprehend/model=entity/language_code={}/type={}/comprehend={}/{}.json', $.entity.languageCode, $.entity.type, $.entity.comprehendId, $.entity.id)"
+                                                                                            },
+                                                                                            "Resource": "arn:aws:states:::aws-sdk:s3:putObject",
                                                                                             "End": true
                                                                                         }
                                                                                     }
                                                                                 },
                                                                                 "End": true,
                                                                                 "ItemSelector": {
-                                                                                    "comprehendId.$": "$.comprehend.id",
-                                                                                    "createdAt.$": "$.createdAt",
                                                                                     "entity": {
                                                                                         "beginOffset.$": "$$.Map.Item.Value.beginOffset",
                                                                                         "comprehendId.$": "$.comprehend.id",
                                                                                         "createdAt.$": "$.createdAt",
                                                                                         "endOffset.$": "$$.Map.Item.Value.endOffset",
+                                                                                        "id.$": "States.Hash($$.Map.Item.Value, 'MD5')",
                                                                                         "index.$": "$$.Map.Item.Value.index",
                                                                                         "languageCode.$": "$.comprehend.languageCode",
                                                                                         "languageCodeScore.$": "$.comprehend.languageCodeScore",
                                                                                         "score.$": "$$.Map.Item.Value.score",
                                                                                         "text.$": "$$.Map.Item.Value.text",
                                                                                         "type.$": "$$.Map.Item.Value.type"
-                                                                                    },
-                                                                                    "language": {
-                                                                                        "code.$": "$.comprehend.languageCode",
-                                                                                        "codeScore.$": "$.comprehend.languageCodeScore"
                                                                                     },
                                                                                     "s3.$": "$.s3"
                                                                                 },

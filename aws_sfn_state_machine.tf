@@ -1,7 +1,9 @@
 resource "aws_sfn_state_machine" "s3_object_created_comprehend" {
-  definition = templatefile("./state_machine/S3ObjectCreatedComprehend.json", {})
-  name       = "${local.organization}-s3-object-created-comprehend"
-  role_arn   = aws_iam_role.sfn_state_machine_s3_object_created_comprehend.arn
+  definition = templatefile("./state_machine/S3ObjectCreatedComprehend.json", {
+    aws_s3_object_key = aws_s3_object.datalake.key
+  })
+  name     = "${local.organization}-s3-object-created-comprehend"
+  role_arn = aws_iam_role.sfn_state_machine_s3_object_created_comprehend.arn
   tags = {
     account_arn  = data.aws_caller_identity.main.arn
     account_id   = data.aws_caller_identity.main.account_id
