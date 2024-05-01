@@ -143,7 +143,7 @@
                                                                                             "Parameters": {
                                                                                                 "Body.$": "$.entity",
                                                                                                 "Bucket.$": "$.s3.bucket.name",
-                                                                                                "Key.$": "States.Format('${aws_s3_object_key}comprehend/model=entity/language_code={}/type={}/comprehend={}/{}.json', $.entity.languageCode, $.entity.type, $.entity.comprehendId, $.entity.id)"
+                                                                                                "Key.$": "States.Format('${aws_s3_object_key}comprehend/model=entity/language_code={}/type={}/comprehend_id={}/{}.json', $.entity.languageCode, $.entity.type, $.entity.comprehendId, $.entity.id)"
                                                                                             },
                                                                                             "Resource": "arn:aws:states:::aws-sdk:s3:putObject",
                                                                                             "End": true
@@ -188,7 +188,7 @@
                                                                                             "Parameters": {
                                                                                                 "Body.$": "$.keyPhrase",
                                                                                                 "Bucket.$": "$.s3.bucket.name",
-                                                                                                "Key.$": "States.Format('${aws_s3_object_key}comprehend/model=key_phrase/language_code={}/comprehend={}/{}.json', $.keyPhrase.languageCode, $.keyPhrase.comprehendId, $.keyPhrase.id)"
+                                                                                                "Key.$": "States.Format('${aws_s3_object_key}comprehend/model=key_phrase/language_code={}/comprehend_id={}/{}.json', $.keyPhrase.languageCode, $.keyPhrase.comprehendId, $.keyPhrase.id)"
                                                                                             },
                                                                                             "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
                                                                                         }
@@ -230,7 +230,7 @@
                                                                                             "Parameters": {
                                                                                                 "Body.$": "$.piiEntity",
                                                                                                 "Bucket.$": "$.s3.bucket.name",
-                                                                                                "Key.$": "States.Format('${aws_s3_object_key}comprehend/model=pii_entity/language_code={}/type={}/comprehend={}/{}.json', $.piiEntity.languageCode, $.piiEntity.type, $.piiEntity.comprehendId, $.piiEntity.id)"
+                                                                                                "Key.$": "States.Format('${aws_s3_object_key}comprehend/model=pii_entity/language_code={}/type={}/comprehend_id={}/{}.json', $.piiEntity.languageCode, $.piiEntity.type, $.piiEntity.comprehendId, $.piiEntity.id)"
                                                                                             },
                                                                                             "Resource": "arn:aws:states:::aws-sdk:s3:putObject",
                                                                                             "End": true
@@ -254,6 +254,80 @@
                                                                                     "s3.$": "$.s3"
                                                                                 },
                                                                                 "ItemsPath": "$.comprehend.piiEntities"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "StartAt": "ParallelProcessComprehendSentiment",
+                                                                        "States": {
+                                                                            "ParallelProcessComprehendSentiment": {
+                                                                                "Type": "Parallel",
+                                                                                "End": true,
+                                                                                "Branches": [
+                                                                                    {
+                                                                                        "StartAt": "PutObjectComprehendSentiment",
+                                                                                        "States": {
+                                                                                            "PutObjectComprehendSentiment": {
+                                                                                                "Type": "Task",
+                                                                                                "End": true,
+                                                                                                "Parameters": {
+                                                                                                    "Body": {
+                                                                                                        "comprehendId.$": "$.sentiment.comprehendId",
+                                                                                                        "id.$": "$.sentiment.id",
+                                                                                                        "languageCode.$": "$.sentiment.languageCode",
+                                                                                                        "languageCodeScore.$": "$.sentiment.languageCodeScore",
+                                                                                                        "sentiment.$": "$.sentiment.sentiment"
+                                                                                                    },
+                                                                                                    "Bucket.$": "$.s3.bucket.name",
+                                                                                                    "Key.$": "States.Format('${aws_s3_object_key}comprehend/model=sentiment/language_code={}/sentiment={}/comprehend_id={}/{}.json', $.sentiment.languageCode, $.sentiment.sentiment, $.sentiment.comprehendId, $.sentiment.id)"
+                                                                                                },
+                                                                                                "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
+                                                                                            }
+                                                                                        }
+                                                                                    },
+                                                                                    {
+                                                                                        "StartAt": "PutObjectComprehendSentimentScore",
+                                                                                        "States": {
+                                                                                            "PutObjectComprehendSentimentScore": {
+                                                                                                "Type": "Task",
+                                                                                                "End": true,
+                                                                                                "Parameters": {
+                                                                                                    "Body": {
+                                                                                                        "comprehendId.$": "$.sentiment.comprehendId",
+                                                                                                        "id.$": "$.sentiment.sentimentScore.id",
+                                                                                                        "languageCode.$": "$.sentiment.languageCode",
+                                                                                                        "languageCodeScore.$": "$.sentiment.languageCodeScore",
+                                                                                                        "mixed.$": "$.sentiment.sentimentScore.mixed",
+                                                                                                        "negative.$": "$.sentiment.sentimentScore.negative",
+                                                                                                        "neutral.$": "$.sentiment.sentimentScore.neutral",
+                                                                                                        "positive.$": "$.sentiment.sentimentScore.positive",
+                                                                                                        "sentimentId.$": "$.sentiment.id"
+                                                                                                    },
+                                                                                                    "Bucket.$": "$.s3.bucket.name",
+                                                                                                    "Key.$": "States.Format('${aws_s3_object_key}comprehend/model=sentiment_score/language_code={}/sentiment={}/sentiment_id={}/comprehend_id={}/{}.json', $.sentiment.languageCode, $.sentiment.sentiment, $.sentiment.id, $.sentiment.comprehendId, $.sentiment.sentimentScore.id)"
+                                                                                                },
+                                                                                                "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                ],
+                                                                                "Parameters": {
+                                                                                    "s3.$": "$.s3",
+                                                                                    "sentiment": {
+                                                                                        "comprehendId.$": "$.comprehend.id",
+                                                                                        "id.$": "States.Hash($.comprehend.sentiment, 'MD5')",
+                                                                                        "languageCode.$": "$.comprehend.languageCode",
+                                                                                        "languageCodeScore.$": "$.comprehend.languageCodeScore",
+                                                                                        "sentiment.$": "$.comprehend.sentiment.sentiment",
+                                                                                        "sentimentScore": {
+                                                                                            "id.$": "States.Hash($.comprehend.sentiment.sentimentScore, 'MD5')",
+                                                                                            "mixed.$": "$.comprehend.sentiment.sentimentScore.mixed",
+                                                                                            "negative.$": "$.comprehend.sentiment.sentimentScore.negative",
+                                                                                            "neutral.$": "$.comprehend.sentiment.sentimentScore.neutral",
+                                                                                            "positive.$": "$.comprehend.sentiment.sentimentScore.positive"
+                                                                                        }
+                                                                                    }
+                                                                                }
                                                                             }
                                                                         }
                                                                     }
