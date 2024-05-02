@@ -304,7 +304,7 @@
                                                                                                         "sentimentId.$": "$.sentiment.id"
                                                                                                     },
                                                                                                     "Bucket.$": "$.s3.bucket.name",
-                                                                                                    "Key.$": "States.Format('${aws_s3_object_key}model=sentiment_score/language_code={}/sentiment={}/sentiment_id={}/comprehend_id={}/{}.json', $.sentiment.languageCode, $.sentiment.sentiment, $.sentiment.id, $.sentiment.comprehendId, $.sentiment.sentimentScore.id)"
+                                                                                                    "Key.$": "States.Format('${aws_s3_object_key}model=sentiment_score/language_code={}/sentiment_id={}/comprehend_id={}/{}.json', $.sentiment.languageCode, $.sentiment.id, $.sentiment.comprehendId, $.sentiment.sentimentScore.id)"
                                                                                                 },
                                                                                                 "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
                                                                                             }
