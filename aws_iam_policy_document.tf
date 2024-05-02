@@ -1,3 +1,16 @@
+data "aws_iam_policy_document" "assume_role_glue_crawler_datalake" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    effect = "Allow"
+    principals {
+      identifiers = ["glue.amazonaws.com"]
+      type        = "Service"
+    }
+  }
+}
+
 data "aws_iam_policy_document" "assume_role_pipes_pipe_s3_object_created_comprehend" {
   statement {
     actions = [
@@ -47,6 +60,67 @@ data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_
       identifiers = ["states.amazonaws.com"]
       type        = "Service"
     }
+  }
+}
+
+data "aws_iam_policy_document" "glue_crawler_datalake" {
+  statement {
+    actions = [
+      "glue:GetDatabase",
+      "glue:GetTables",
+      "glue:CreateDatabase",
+      "glue:CreateTable",
+      "glue:DeleteTable",
+      "glue:GetTable",
+      "glue:GetTableVersion",
+      "glue:GetTableVersions",
+      "glue:UpdateTable",
+      "glue:CreatePartition",
+      "glue:BatchCreatePartition",
+      "glue:GetPartition",
+      "glue:GetPartitions",
+      "glue:BatchGetPartition",
+      "glue:UpdatePartition",
+      "glue:DeletePartition",
+      "glue:BatchDeletePartition"
+    ]
+    effect = "Allow"
+    resources = [
+      "arn:aws:glue:${data.aws_region.main.name}:${data.aws_caller_identity.main.account_id}:catalog",
+      "arn:aws:glue:${data.aws_region.main.name}:${data.aws_caller_identity.main.account_id}:database/${aws_glue_catalog_database.datalake.name}",
+      "arn:aws:glue:${data.aws_region.main.name}:${data.aws_caller_identity.main.account_id}:table/${aws_glue_catalog_database.datalake.name}/*"
+    ]
+  }
+  statement {
+    actions = [
+      "s3:GetBucketLocation",
+      "s3:ListBucket",
+      "s3:ListAllMyBuckets",
+      "s3:GetBucketAcl"
+    ]
+    effect = "Allow"
+    resources = [
+      "${aws_s3_bucket.main.arn}"
+    ]
+  }
+  statement {
+    actions = [
+      "S3:GetObject",
+      "S3:GetObjectVersion"
+    ]
+    effect = "Allow"
+    resources = [
+      "${aws_s3_bucket.main.arn}/${aws_s3_object.datalake.key}*"
+    ]
+  }
+  statement {
+    actions = [
+      "S3:PutObject"
+    ]
+    effect = "Allow"
+    resources = [
+      "${aws_s3_bucket.main.arn}/${aws_s3_object.glue.key}*"
+    ]
   }
 }
 
