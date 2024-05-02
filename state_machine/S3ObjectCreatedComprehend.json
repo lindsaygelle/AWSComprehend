@@ -438,6 +438,27 @@
                                                                                             "End": true,
                                                                                             "Branches": [
                                                                                                 {
+                                                                                                    "StartAt": "PutObjectComprehendTargetedSentiment",
+                                                                                                    "States": {
+                                                                                                        "PutObjectComprehendTargetedSentiment": {
+                                                                                                            "Type": "Task",
+                                                                                                            "End": true,
+                                                                                                            "Parameters": {
+                                                                                                                "Body": {
+                                                                                                                    "comprehendId.$": "$.comprehendId",
+                                                                                                                    "id.$": "$.id",
+                                                                                                                    "index.$": "$.index",
+                                                                                                                    "languageCode.$": "$.languageCode",
+                                                                                                                    "languageCodeScore.$": "$.languageCodeScore"
+                                                                                                                },
+                                                                                                                "Bucket.$": "$.s3.bucket.name",
+                                                                                                                "Key.$": "States.Format('${aws_s3_object_key}model=targeted_sentiment/language_code={}/comprehend_id={}/{}.json', $.languageCode, $.comprehendId, $.id)"
+                                                                                                            },
+                                                                                                            "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
+                                                                                                        }
+                                                                                                    }
+                                                                                                },
+                                                                                                {
                                                                                                     "StartAt": "ProcessComprehendTargetedSentimentDescriptiveIndex",
                                                                                                     "States": {
                                                                                                         "ProcessComprehendTargetedSentimentDescriptiveIndex": {
@@ -532,11 +553,37 @@
                                                                                                                                                 "id.$": "$.mention.mentionSentiment.id",
                                                                                                                                                 "languageCode.$": "$.mention.languageCode",
                                                                                                                                                 "languageCodeScore.$": "$.mention.languageCodeScore",
-                                                                                                                                                "mentionSentimentId.$": "$.mention.id",
+                                                                                                                                                "targetedSentimentMentionId.$": "$.mention.id",
                                                                                                                                                 "sentiment.$": "$.mention.mentionSentiment.sentiment"
                                                                                                                                             },
                                                                                                                                             "Bucket.$": "$.s3.bucket.name",
                                                                                                                                             "Key.$": "States.Format('${aws_s3_object_key}model=targeted_sentiment_mention_sentiment/language_code={}/sentiment={}/targeted_sentiment_mention_id={}/targeted_sentiment_id={}/comprehend_id={}/{}.json', $.mention.languageCode, $.mention.mentionSentiment.sentiment, $.mention.id, $.mention.targetedSentimentId, $.mention.comprehendId, $.mention.mentionSentiment.id)"
+                                                                                                                                        },
+                                                                                                                                        "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "StartAt": "PutObjectComprehendTargetedSentimentMentionMentionSentimentSentimentScore",
+                                                                                                                                "States": {
+                                                                                                                                    "PutObjectComprehendTargetedSentimentMentionMentionSentimentSentimentScore": {
+                                                                                                                                        "Type": "Task",
+                                                                                                                                        "End": true,
+                                                                                                                                        "Parameters": {
+                                                                                                                                            "Body": {
+                                                                                                                                                "comprehendId.$": "$.mention.comprehendId",
+                                                                                                                                                "id.$": "$.mention.mentionSentiment.sentimentScore.id",
+                                                                                                                                                "languageCode.$": "$.mention.languageCode",
+                                                                                                                                                "languageCodeScore.$": "$.mention.languageCodeScore",
+                                                                                                                                                "negative.$": "$.mention.mentionSentiment.sentimentScore.negative",
+                                                                                                                                                "neutral.$": "$.mention.mentionSentiment.sentimentScore.neutral",
+                                                                                                                                                "mixed.$": "$.mention.mentionSentiment.sentimentScore.mixed",
+                                                                                                                                                "positive.$": "$.mention.mentionSentiment.sentimentScore.positive",
+                                                                                                                                                "targetedSentimentId.$": "$.mention.targetedSentimentId",
+                                                                                                                                                "targetedSentimentMentionSentimentId.$": "$.mention.mentionSentiment.id"
+                                                                                                                                            },
+                                                                                                                                            "Bucket.$": "$.s3.bucket.name",
+                                                                                                                                            "Key.$": "States.Format('${aws_s3_object_key}model=targeted_sentiment_mention_sentiment_score/language_code={}/targeted_sentiment_mention_sentiment_id={}/targeted_sentiment_mention_id={}/targeted_sentiment_id={}/comprehend_id={}/{}.json', $.mention.languageCode, $.mention.mentionSentiment.id, $.mention.id, $.mention.targetedSentimentId, $.mention.comprehendId, $.mention.mentionSentiment.sentimentScore.id)"
                                                                                                                                         },
                                                                                                                                         "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
                                                                                                                                     }
