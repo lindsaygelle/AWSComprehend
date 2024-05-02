@@ -421,6 +421,82 @@
                                                                                 }
                                                                             }
                                                                         }
+                                                                    },
+                                                                    {
+                                                                        "StartAt": "ProcessComprehendTargetedSentiment",
+                                                                        "States": {
+                                                                            "ProcessComprehendTargetedSentiment": {
+                                                                                "Type": "Map",
+                                                                                "ItemProcessor": {
+                                                                                    "ProcessorConfig": {
+                                                                                        "Mode": "INLINE"
+                                                                                    },
+                                                                                    "StartAt": "ParallelProcessComprehendTargetedSentiment",
+                                                                                    "States": {
+                                                                                        "ParallelProcessComprehendTargetedSentiment": {
+                                                                                            "Type": "Parallel",
+                                                                                            "End": true,
+                                                                                            "Branches": [
+                                                                                                {
+                                                                                                    "StartAt": "ProcessComprehendTargetedSentimentDescriptiveIndex",
+                                                                                                    "States": {
+                                                                                                        "ProcessComprehendTargetedSentimentDescriptiveIndex": {
+                                                                                                            "Type": "Map",
+                                                                                                            "ItemProcessor": {
+                                                                                                                "ProcessorConfig": {
+                                                                                                                    "Mode": "INLINE"
+                                                                                                                },
+                                                                                                                "StartAt": "PutObject",
+                                                                                                                "States": {
+                                                                                                                    "PutObject": {
+                                                                                                                        "Type": "Task",
+                                                                                                                        "End": true,
+                                                                                                                        "Parameters": {
+                                                                                                                            "Body.$": "$.descriptiveMentionIndex",
+                                                                                                                            "Bucket.$": "$.s3.bucket.name",
+                                                                                                                            "Key.$": "States.Format('${aws_s3_object_key}model=targeted_sentiment_descriptive_mention/language_code={}/targeted_sentiment_id={}/comprehend_id={}/{}.json', $.descriptiveMentionIndex.languageCode, $.descriptiveMentionIndex.targetedSentimentId, $.descriptiveMentionIndex.comprehendId, $.descriptiveMentionIndex.id)"
+                                                                                                                        },
+                                                                                                                        "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            },
+                                                                                                            "End": true,
+                                                                                                            "ItemsPath": "$.targetedSentiment.descriptiveMentionIndex",
+                                                                                                            "ItemSelector": {
+                                                                                                                "descriptiveMentionIndex": {
+                                                                                                                    "comprehendId.$": "$.targetedSentiment.id",
+                                                                                                                    "id.$": "States.Hash($$.Map.Item.Value, 'MD5')",
+                                                                                                                    "index.$": "$$.Map.Item.Value.index",
+                                                                                                                    "languageCode.$": "$.targetedSentiment.languageCode",
+                                                                                                                    "languageCodeScore.$": "$.targetedSentiment.languageCodeScore",
+                                                                                                                    "targetedSentimentId.$": "$.targetedSentiment.id",
+                                                                                                                    "value.$": "$$.Map.Item.Value.value"
+                                                                                                                },
+                                                                                                                "s3.$": "$.s3"
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            ]
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                "End": true,
+                                                                                "ItemsPath": "$.comprehend.targetedSentiment",
+                                                                                "ItemSelector": {
+                                                                                    "s3.$": "$.s3",
+                                                                                    "targetedSentiment": {
+                                                                                        "comprehendId.$": "$.comprehend.id",
+                                                                                        "descriptiveMentionIndex.$": "$$.Map.Item.Value.descriptiveMentionIndex",
+                                                                                        "index.$": "$$.Map.Item.Value.index",
+                                                                                        "id.$": "States.Hash($$.Map.Item.Value, 'MD5')",
+                                                                                        "languageCode.$": "$.comprehend.languageCode",
+                                                                                        "languageCodeScore.$": "$.comprehend.languageCodeScore",
+                                                                                        "mentions.$": "$$.Map.Item.Value.mentions"
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
                                                                     }
                                                                 ]
                                                             }
@@ -442,7 +518,9 @@
                                                             "targetedSentiment.$": "$$.Map.Item.Value.targetedSentiment",
                                                             "toxicContent.$": "$$.Map.Item.Value.toxicContent"
                                                         },
-                                                        "s3.$": "$.s3"
+                                                        "s3": {
+                                                            "bucket.$": "$.s3.bucket"
+                                                        }
                                                     }
                                                 }
                                             }

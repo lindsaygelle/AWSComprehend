@@ -698,9 +698,9 @@
                                                                                                                     "Text.$": "$.text"
                                                                                                                 },
                                                                                                                 "Resource": "arn:aws:states:::aws-sdk:comprehend:detectTargetedSentiment",
-                                                                                                                "Next": "ProcessDetectTargetedSentiment"
+                                                                                                                "Next": "ProcessDetectTargetedSentiments"
                                                                                                             },
-                                                                                                            "ProcessDetectTargetedSentiment": {
+                                                                                                            "ProcessDetectTargetedSentiments": {
                                                                                                                 "Type": "Map",
                                                                                                                 "ItemProcessor": {
                                                                                                                     "ProcessorConfig": {
@@ -712,6 +712,18 @@
                                                                                                                             "Type": "Parallel",
                                                                                                                             "End": true,
                                                                                                                             "Branches": [
+                                                                                                                                {
+                                                                                                                                    "StartAt": "ProcessDetectTargetedSentiment",
+                                                                                                                                    "States": {
+                                                                                                                                        "ProcessDetectTargetedSentiment": {
+                                                                                                                                            "Type": "Pass",
+                                                                                                                                            "End": true,
+                                                                                                                                            "Parameters": {
+                                                                                                                                                "index.$": "$.index"
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                },
                                                                                                                                 {
                                                                                                                                     "StartAt": "ProcessDescriptiveMentionIndexes",
                                                                                                                                     "States": {
@@ -780,8 +792,9 @@
                                                                                                                                 }
                                                                                                                             ],
                                                                                                                             "ResultSelector": {
-                                                                                                                                "descriptiveMentionIndex.$": "$[0]",
-                                                                                                                                "mentions.$": "$[1]"
+                                                                                                                                "descriptiveMentionIndex.$": "$[1]",
+                                                                                                                                "index.$": "$[0].index",
+                                                                                                                                "mentions.$": "$[2]"
                                                                                                                             }
                                                                                                                         }
                                                                                                                     }
