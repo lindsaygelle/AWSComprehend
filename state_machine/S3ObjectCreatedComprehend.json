@@ -143,7 +143,7 @@
                                                                                             "Parameters": {
                                                                                                 "Body.$": "$.entity",
                                                                                                 "Bucket.$": "$.s3.bucket.name",
-                                                                                                "Key.$": "States.Format('${aws_s3_object_key}comprehend/model=entity/language_code={}/type={}/comprehend_id={}/{}.json', $.entity.languageCode, $.entity.type, $.entity.comprehendId, $.entity.id)"
+                                                                                                "Key.$": "States.Format('${aws_s3_object_key}model=entity/language_code={}/type={}/comprehend_id={}/{}.json', $.entity.languageCode, $.entity.type, $.entity.comprehendId, $.entity.id)"
                                                                                             },
                                                                                             "Resource": "arn:aws:states:::aws-sdk:s3:putObject",
                                                                                             "End": true
@@ -188,7 +188,7 @@
                                                                                             "Parameters": {
                                                                                                 "Body.$": "$.keyPhrase",
                                                                                                 "Bucket.$": "$.s3.bucket.name",
-                                                                                                "Key.$": "States.Format('${aws_s3_object_key}comprehend/model=key_phrase/language_code={}/comprehend_id={}/{}.json', $.keyPhrase.languageCode, $.keyPhrase.comprehendId, $.keyPhrase.id)"
+                                                                                                "Key.$": "States.Format('${aws_s3_object_key}model=key_phrase/language_code={}/comprehend_id={}/{}.json', $.keyPhrase.languageCode, $.keyPhrase.comprehendId, $.keyPhrase.id)"
                                                                                             },
                                                                                             "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
                                                                                         }
@@ -230,7 +230,7 @@
                                                                                             "Parameters": {
                                                                                                 "Body.$": "$.piiEntity",
                                                                                                 "Bucket.$": "$.s3.bucket.name",
-                                                                                                "Key.$": "States.Format('${aws_s3_object_key}comprehend/model=pii_entity/language_code={}/type={}/comprehend_id={}/{}.json', $.piiEntity.languageCode, $.piiEntity.type, $.piiEntity.comprehendId, $.piiEntity.id)"
+                                                                                                "Key.$": "States.Format('${aws_s3_object_key}model=pii_entity/language_code={}/type={}/comprehend_id={}/{}.json', $.piiEntity.languageCode, $.piiEntity.type, $.piiEntity.comprehendId, $.piiEntity.id)"
                                                                                             },
                                                                                             "Resource": "arn:aws:states:::aws-sdk:s3:putObject",
                                                                                             "End": true
@@ -279,7 +279,7 @@
                                                                                                         "sentiment.$": "$.sentiment.sentiment"
                                                                                                     },
                                                                                                     "Bucket.$": "$.s3.bucket.name",
-                                                                                                    "Key.$": "States.Format('${aws_s3_object_key}comprehend/model=sentiment/language_code={}/sentiment={}/comprehend_id={}/{}.json', $.sentiment.languageCode, $.sentiment.sentiment, $.sentiment.comprehendId, $.sentiment.id)"
+                                                                                                    "Key.$": "States.Format('${aws_s3_object_key}model=sentiment/language_code={}/sentiment={}/comprehend_id={}/{}.json', $.sentiment.languageCode, $.sentiment.sentiment, $.sentiment.comprehendId, $.sentiment.id)"
                                                                                                 },
                                                                                                 "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
                                                                                             }
@@ -304,7 +304,7 @@
                                                                                                         "sentimentId.$": "$.sentiment.id"
                                                                                                     },
                                                                                                     "Bucket.$": "$.s3.bucket.name",
-                                                                                                    "Key.$": "States.Format('${aws_s3_object_key}comprehend/model=sentiment_score/language_code={}/sentiment={}/sentiment_id={}/comprehend_id={}/{}.json', $.sentiment.languageCode, $.sentiment.sentiment, $.sentiment.id, $.sentiment.comprehendId, $.sentiment.sentimentScore.id)"
+                                                                                                    "Key.$": "States.Format('${aws_s3_object_key}model=sentiment_score/language_code={}/sentiment={}/sentiment_id={}/comprehend_id={}/{}.json', $.sentiment.languageCode, $.sentiment.sentiment, $.sentiment.id, $.sentiment.comprehendId, $.sentiment.sentimentScore.id)"
                                                                                                 },
                                                                                                 "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
                                                                                             }
@@ -330,6 +330,173 @@
                                                                                 }
                                                                             }
                                                                         }
+                                                                    },
+                                                                    {
+                                                                        "StartAt": "ProcessComprehendSyntaxTokens",
+                                                                        "States": {
+                                                                            "ProcessComprehendSyntaxTokens": {
+                                                                                "Type": "Map",
+                                                                                "ItemProcessor": {
+                                                                                    "ProcessorConfig": {
+                                                                                        "Mode": "INLINE"
+                                                                                    },
+                                                                                    "StartAt": "ParallelProcessComprehendSyntaxToken",
+                                                                                    "States": {
+                                                                                        "ParallelProcessComprehendSyntaxToken": {
+                                                                                            "Type": "Parallel",
+                                                                                            "End": true,
+                                                                                            "Branches": [
+                                                                                                {
+                                                                                                    "StartAt": "PutObjectComprehendSyntaxToken",
+                                                                                                    "States": {
+                                                                                                        "PutObjectComprehendSyntaxToken": {
+                                                                                                            "Type": "Task",
+                                                                                                            "End": true,
+                                                                                                            "Parameters": {
+                                                                                                                "Body": {
+                                                                                                                    "beginOffset.$": "$.syntaxToken.beginOffset",
+                                                                                                                    "comprehendId.$": "$.syntaxToken.comprehendId",
+                                                                                                                    "endOffset.$": "$.syntaxToken.endOffset",
+                                                                                                                    "index.$": "$.syntaxToken.index",
+                                                                                                                    "id.$": "$.syntaxToken.id",
+                                                                                                                    "languageCode.$": "$.syntaxToken.languageCode",
+                                                                                                                    "languageCodeScore.$": "$.syntaxToken.languageCodeScore",
+                                                                                                                    "text.$": "$.syntaxToken.text",
+                                                                                                                    "tokenId.$": "$.syntaxToken.tokenId"
+                                                                                                                },
+                                                                                                                "Bucket.$": "$.s3.bucket.name",
+                                                                                                                "Key.$": "States.Format('${aws_s3_object_key}model=syntax_token/language_code={}/token_id={}/comprehend_id={}/{}.json', $.syntaxToken.languageCode, $.syntaxToken.tokenId, $.syntaxToken.comprehendId, $.syntaxToken.id)"
+                                                                                                            },
+                                                                                                            "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
+                                                                                                        }
+                                                                                                    }
+                                                                                                },
+                                                                                                {
+                                                                                                    "StartAt": "PutObjectComprehendSyntaxTokenPartOfSpeech",
+                                                                                                    "States": {
+                                                                                                        "PutObjectComprehendSyntaxTokenPartOfSpeech": {
+                                                                                                            "Type": "Task",
+                                                                                                            "End": true,
+                                                                                                            "Parameters": {
+                                                                                                                "Body": {
+                                                                                                                    "comprehendId.$": "$.syntaxToken.comprehendId",
+                                                                                                                    "id.$": "$.syntaxToken.partOfSpeech.id",
+                                                                                                                    "languageCode.$": "$.syntaxToken.languageCode",
+                                                                                                                    "languageCodeScore.$": "$.syntaxToken.languageCodeScore",
+                                                                                                                    "score.$": "$.syntaxToken.partOfSpeech.score",
+                                                                                                                    "syntaxTokenId.$": "$.syntaxToken.id",
+                                                                                                                    "tag.$": "$.syntaxToken.partOfSpeech.tag"
+                                                                                                                },
+                                                                                                                "Bucket.$": "$.s3.bucket.name",
+                                                                                                                "Key.$": "States.Format('${aws_s3_object_key}model=syntax_token_part_of_speech/language_code={}/tag={}/syntax_token_id={}/comprehend_id={}/{}.json', $.syntaxToken.languageCode, $.syntaxToken.partOfSpeech.tag, $.syntaxToken.id, $.syntaxToken.comprehendId, $.syntaxToken.partOfSpeech.id)"
+                                                                                                            },
+                                                                                                            "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            ]
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                "End": true,
+                                                                                "ItemsPath": "$.comprehend.syntaxTokens",
+                                                                                "ItemSelector": {
+                                                                                    "syntaxToken": {
+                                                                                        "beginOffset.$": "$$.Map.Item.Value.beginOffset",
+                                                                                        "comprehendId.$": "$.comprehend.id",
+                                                                                        "endOffset.$": "$$.Map.Item.Value.endOffset",
+                                                                                        "index.$": "$$.Map.Item.Value.index",
+                                                                                        "id.$": "States.Hash($$.Map.Item.Value, 'MD5')",
+                                                                                        "languageCode.$": "$.comprehend.languageCode",
+                                                                                        "languageCodeScore.$": "$.comprehend.languageCodeScore",
+                                                                                        "partOfSpeech": {
+                                                                                            "id.$": "States.Hash($$.Map.Item.Value.partOfSpeech, 'MD5')",
+                                                                                            "score.$": "$$.Map.Item.Value.partOfSpeech.score",
+                                                                                            "tag.$": "$$.Map.Item.Value.partOfSpeech.tag"
+                                                                                        },
+                                                                                        "text.$": "$$.Map.Item.Value.text",
+                                                                                        "tokenId.$": "$$.Map.Item.Value.tokenId"
+                                                                                    },
+                                                                                    "s3.$": "$.s3"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "StartAt": "ProcessComprehendTargetedSentiment",
+                                                                        "States": {
+                                                                            "ProcessComprehendTargetedSentiment": {
+                                                                                "Type": "Map",
+                                                                                "ItemProcessor": {
+                                                                                    "ProcessorConfig": {
+                                                                                        "Mode": "INLINE"
+                                                                                    },
+                                                                                    "StartAt": "ParallelProcessComprehendTargetedSentiment",
+                                                                                    "States": {
+                                                                                        "ParallelProcessComprehendTargetedSentiment": {
+                                                                                            "Type": "Parallel",
+                                                                                            "End": true,
+                                                                                            "Branches": [
+                                                                                                {
+                                                                                                    "StartAt": "ProcessComprehendTargetedSentimentDescriptiveIndex",
+                                                                                                    "States": {
+                                                                                                        "ProcessComprehendTargetedSentimentDescriptiveIndex": {
+                                                                                                            "Type": "Map",
+                                                                                                            "ItemProcessor": {
+                                                                                                                "ProcessorConfig": {
+                                                                                                                    "Mode": "INLINE"
+                                                                                                                },
+                                                                                                                "StartAt": "PutObject",
+                                                                                                                "States": {
+                                                                                                                    "PutObject": {
+                                                                                                                        "Type": "Task",
+                                                                                                                        "End": true,
+                                                                                                                        "Parameters": {
+                                                                                                                            "Body.$": "$.descriptiveMentionIndex",
+                                                                                                                            "Bucket.$": "$.s3.bucket.name",
+                                                                                                                            "Key.$": "States.Format('${aws_s3_object_key}model=targeted_sentiment_descriptive_mention/language_code={}/targeted_sentiment_id={}/comprehend_id={}/{}.json', $.descriptiveMentionIndex.languageCode, $.descriptiveMentionIndex.targetedSentimentId, $.descriptiveMentionIndex.comprehendId, $.descriptiveMentionIndex.id)"
+                                                                                                                        },
+                                                                                                                        "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            },
+                                                                                                            "End": true,
+                                                                                                            "ItemsPath": "$.targetedSentiment.descriptiveMentionIndex",
+                                                                                                            "ItemSelector": {
+                                                                                                                "descriptiveMentionIndex": {
+                                                                                                                    "comprehendId.$": "$.targetedSentiment.id",
+                                                                                                                    "id.$": "States.Hash($$.Map.Item.Value, 'MD5')",
+                                                                                                                    "index.$": "$$.Map.Item.Value.index",
+                                                                                                                    "languageCode.$": "$.targetedSentiment.languageCode",
+                                                                                                                    "languageCodeScore.$": "$.targetedSentiment.languageCodeScore",
+                                                                                                                    "targetedSentimentId.$": "$.targetedSentiment.id",
+                                                                                                                    "value.$": "$$.Map.Item.Value.value"
+                                                                                                                },
+                                                                                                                "s3.$": "$.s3"
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            ]
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                "End": true,
+                                                                                "ItemsPath": "$.comprehend.targetedSentiment",
+                                                                                "ItemSelector": {
+                                                                                    "s3.$": "$.s3",
+                                                                                    "targetedSentiment": {
+                                                                                        "comprehendId.$": "$.comprehend.id",
+                                                                                        "descriptiveMentionIndex.$": "$$.Map.Item.Value.descriptiveMentionIndex",
+                                                                                        "index.$": "$$.Map.Item.Value.index",
+                                                                                        "id.$": "States.Hash($$.Map.Item.Value, 'MD5')",
+                                                                                        "languageCode.$": "$.comprehend.languageCode",
+                                                                                        "languageCodeScore.$": "$.comprehend.languageCodeScore",
+                                                                                        "mentions.$": "$$.Map.Item.Value.mentions"
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
                                                                     }
                                                                 ]
                                                             }
@@ -351,7 +518,9 @@
                                                             "targetedSentiment.$": "$$.Map.Item.Value.targetedSentiment",
                                                             "toxicContent.$": "$$.Map.Item.Value.toxicContent"
                                                         },
-                                                        "s3.$": "$.s3"
+                                                        "s3": {
+                                                            "bucket.$": "$.s3.bucket"
+                                                        }
                                                     }
                                                 }
                                             }
