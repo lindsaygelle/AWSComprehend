@@ -446,9 +446,9 @@
                                                                                                                 "ProcessorConfig": {
                                                                                                                     "Mode": "INLINE"
                                                                                                                 },
-                                                                                                                "StartAt": "PutObject",
+                                                                                                                "StartAt": "PutObjectComprehendTargetedSentimentDescriptiveIndex",
                                                                                                                 "States": {
-                                                                                                                    "PutObject": {
+                                                                                                                    "PutObjectComprehendTargetedSentimentDescriptiveIndex": {
                                                                                                                         "Type": "Task",
                                                                                                                         "End": true,
                                                                                                                         "Parameters": {
@@ -471,6 +471,108 @@
                                                                                                                     "languageCodeScore.$": "$.targetedSentiment.languageCodeScore",
                                                                                                                     "targetedSentimentId.$": "$.targetedSentiment.id",
                                                                                                                     "value.$": "$$.Map.Item.Value.value"
+                                                                                                                },
+                                                                                                                "s3.$": "$.s3"
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                },
+                                                                                                {
+                                                                                                    "StartAt": "ProcessComprehendTargetedSentimentMention",
+                                                                                                    "States": {
+                                                                                                        "ProcessComprehendTargetedSentimentMention": {
+                                                                                                            "Type": "Map",
+                                                                                                            "ItemProcessor": {
+                                                                                                                "ProcessorConfig": {
+                                                                                                                    "Mode": "INLINE"
+                                                                                                                },
+                                                                                                                "StartAt": "ParallelProcessComprehendTargetedSentimentMention",
+                                                                                                                "States": {
+                                                                                                                    "ParallelProcessComprehendTargetedSentimentMention": {
+                                                                                                                        "Type": "Parallel",
+                                                                                                                        "End": true,
+                                                                                                                        "Branches": [
+                                                                                                                            {
+                                                                                                                                "StartAt": "PutObjectComprehendTargetedSentimentMention",
+                                                                                                                                "States": {
+                                                                                                                                    "PutObjectComprehendTargetedSentimentMention": {
+                                                                                                                                        "Type": "Task",
+                                                                                                                                        "End": true,
+                                                                                                                                        "Parameters": {
+                                                                                                                                            "Body": {
+                                                                                                                                                "beginOffset.$": "$.mention.beginOffset",
+                                                                                                                                                "comprehendId.$": "$.mention.comprehendId",
+                                                                                                                                                "endOffset.$": "$.mention.endOffset",
+                                                                                                                                                "groupScore.$": "$.mention.groupScore",
+                                                                                                                                                "id.$": "$.mention.id",
+                                                                                                                                                "index.$": "$.mention.index",
+                                                                                                                                                "languageCode.$": "$.mention.languageCode",
+                                                                                                                                                "languageCodeScore.$": "$.mention.languageCodeScore",
+                                                                                                                                                "score.$": "$.mention.score",
+                                                                                                                                                "targetedSentimentId.$": "$.mention.targetedSentimentId",
+                                                                                                                                                "text.$": "$.mention.text",
+                                                                                                                                                "type.$": "$.mention.type"
+                                                                                                                                            },
+                                                                                                                                            "Bucket.$": "$.s3.bucket.name",
+                                                                                                                                            "Key.$": "States.Format('${aws_s3_object_key}model=targeted_sentiment_mention/language_code={}/type={}/targeted_sentiment_id={}/comprehend_id={}/{}.json', $.mention.languageCode, $.mention.type, $.mention.targetedSentimentId, $.mention.comprehendId, $.mention.id)"
+                                                                                                                                        },
+                                                                                                                                        "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            },
+                                                                                                                            {
+                                                                                                                                "StartAt": "PutObjectComprehendTargetedSentimentMentionSentiment",
+                                                                                                                                "States": {
+                                                                                                                                    "PutObjectComprehendTargetedSentimentMentionSentiment": {
+                                                                                                                                        "Type": "Task",
+                                                                                                                                        "End": true,
+                                                                                                                                        "Parameters": {
+                                                                                                                                            "Body": {
+                                                                                                                                                "comprehendId.$": "$.mention.comprehendId",
+                                                                                                                                                "id.$": "$.mention.mentionSentiment.id",
+                                                                                                                                                "languageCode.$": "$.mention.languageCode",
+                                                                                                                                                "languageCodeScore.$": "$.mention.languageCodeScore",
+                                                                                                                                                "mentionSentimentId.$": "$.mention.id",
+                                                                                                                                                "sentiment.$": "$.mention.mentionSentiment.sentiment"
+                                                                                                                                            },
+                                                                                                                                            "Bucket.$": "$.s3.bucket.name",
+                                                                                                                                            "Key.$": "States.Format('${aws_s3_object_key}model=targeted_sentiment_mention_sentiment/language_code={}/sentiment={}/targeted_sentiment_mention_id={}/targeted_sentiment_id={}/comprehend_id={}/{}.json', $.mention.languageCode, $.mention.mentionSentiment.sentiment, $.mention.id, $.mention.targetedSentimentId, $.mention.comprehendId, $.mention.mentionSentiment.id)"
+                                                                                                                                        },
+                                                                                                                                        "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            }
+                                                                                                                        ]
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            },
+                                                                                                            "End": true,
+                                                                                                            "ItemsPath": "$.targetedSentiment.mentions",
+                                                                                                            "ItemSelector": {
+                                                                                                                "mention": {
+                                                                                                                    "beginOffset.$": "$$.Map.Item.Value.beginOffset",
+                                                                                                                    "comprehendId.$": "$.targetedSentiment.id",
+                                                                                                                    "endOffset.$": "$$.Map.Item.Value.endOffset",
+                                                                                                                    "groupScore.$": "$$.Map.Item.Value.groupScore",
+                                                                                                                    "id.$": "States.Hash($$.Map.Item.Value, 'MD5')",
+                                                                                                                    "index.$": "$$.Map.Item.Value.index",
+                                                                                                                    "languageCode.$": "$.targetedSentiment.languageCode",
+                                                                                                                    "languageCodeScore.$": "$.targetedSentiment.languageCodeScore",
+                                                                                                                    "mentionSentiment": {
+                                                                                                                        "id.$": "States.Hash($$.Map.Item.Value.mentionSentiment, 'MD5')",
+                                                                                                                        "sentimentScore": {
+                                                                                                                            "id.$": "States.Hash($$.Map.Item.Value.mentionSentiment.sentimentScore, 'MD5')",
+                                                                                                                            "negative.$": "$$.Map.Item.Value.mentionSentiment.sentimentScore.negative",
+                                                                                                                            "neutral.$": "$$.Map.Item.Value.mentionSentiment.sentimentScore.neutral",
+                                                                                                                            "mixed.$": "$$.Map.Item.Value.mentionSentiment.sentimentScore.mixed",
+                                                                                                                            "positive.$": "$$.Map.Item.Value.mentionSentiment.sentimentScore.positive"
+                                                                                                                        },
+                                                                                                                        "sentiment.$": "$$.Map.Item.Value.mentionSentiment.sentiment"
+                                                                                                                    },
+                                                                                                                    "score.$": "$$.Map.Item.Value.score",
+                                                                                                                    "targetedSentimentId.$": "$.targetedSentiment.id",
+                                                                                                                    "text.$": "$$.Map.Item.Value.text",
+                                                                                                                    "type.$": "$$.Map.Item.Value.type"
                                                                                                                 },
                                                                                                                 "s3.$": "$.s3"
                                                                                                             }
