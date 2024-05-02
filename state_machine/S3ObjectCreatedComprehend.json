@@ -445,14 +445,14 @@
                                                                                                             "End": true,
                                                                                                             "Parameters": {
                                                                                                                 "Body": {
-                                                                                                                    "comprehendId.$": "$.comprehendId",
-                                                                                                                    "id.$": "$.id",
-                                                                                                                    "index.$": "$.index",
-                                                                                                                    "languageCode.$": "$.languageCode",
-                                                                                                                    "languageCodeScore.$": "$.languageCodeScore"
+                                                                                                                    "comprehendId.$": "$.targetedSentiment.comprehendId",
+                                                                                                                    "id.$": "$.targetedSentiment.id",
+                                                                                                                    "index.$": "$.targetedSentiment.index",
+                                                                                                                    "languageCode.$": "$.targetedSentiment.languageCode",
+                                                                                                                    "languageCodeScore.$": "$.targetedSentiment.languageCodeScore"
                                                                                                                 },
                                                                                                                 "Bucket.$": "$.s3.bucket.name",
-                                                                                                                "Key.$": "States.Format('${aws_s3_object_key}model=targeted_sentiment/language_code={}/comprehend_id={}/{}.json', $.languageCode, $.comprehendId, $.id)"
+                                                                                                                "Key.$": "States.Format('${aws_s3_object_key}model=targeted_sentiment/language_code={}/comprehend_id={}/{}.json', $.targetedSentiment.languageCode, $.targetedSentiment.comprehendId, $.targetedSentiment.id)"
                                                                                                             },
                                                                                                             "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
                                                                                                         }
