@@ -87,8 +87,8 @@ data "aws_iam_policy_document" "glue_crawler_datalake_comprehend" {
     effect = "Allow"
     resources = [
       "arn:aws:glue:${data.aws_region.main.name}:${data.aws_caller_identity.main.account_id}:catalog",
-      "arn:aws:glue:${data.aws_region.main.name}:${data.aws_caller_identity.main.account_id}:database/${aws_glue_catalog_database.datalake.name}",
-      "arn:aws:glue:${data.aws_region.main.name}:${data.aws_caller_identity.main.account_id}:table/${aws_glue_catalog_database.datalake.name}/*"
+      "arn:aws:glue:${data.aws_region.main.name}:${data.aws_caller_identity.main.account_id}:database/${aws_glue_catalog_database.datalake_comprehend.name}",
+      "arn:aws:glue:${data.aws_region.main.name}:${data.aws_caller_identity.main.account_id}:table/${aws_glue_catalog_database.datalake_comprehend.name}/*"
     ]
   }
   statement {
@@ -188,7 +188,7 @@ data "aws_iam_policy_document" "sfn_state_machine_s3_object_created_comprehend" 
     ]
     effect = "Allow"
     resources = [
-      "${aws_s3_bucket.main.arn}/${aws_s3_object.datalake.key}*"
+      "${aws_s3_bucket.main.arn}/${aws_s3_object.datalake_comprehend.key}*"
     ]
   }
 }
