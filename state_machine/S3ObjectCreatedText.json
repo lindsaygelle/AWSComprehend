@@ -859,24 +859,72 @@
                                                                                                                     ]
                                                                                                                 },
                                                                                                                 "Resource": "arn:aws:states:::aws-sdk:comprehend:detectToxicContent",
-                                                                                                                "Next": "Map"
+                                                                                                                "Next": "ProcessDetectToxicContents"
                                                                                                             },
-                                                                                                            "Map": {
+                                                                                                            "ProcessDetectToxicContents": {
                                                                                                                 "Type": "Map",
                                                                                                                 "ItemProcessor": {
                                                                                                                     "ProcessorConfig": {
                                                                                                                         "Mode": "INLINE"
                                                                                                                     },
-                                                                                                                    "StartAt": "Pass",
+                                                                                                                    "StartAt": "ParallelProcessDetectToxicContents",
                                                                                                                     "States": {
-                                                                                                                        "Pass": {
-                                                                                                                            "Type": "Pass",
-                                                                                                                            "End": true
+                                                                                                                        "ParallelProcessDetectToxicContents": {
+                                                                                                                            "Type": "Parallel",
+                                                                                                                            "Branches": [
+                                                                                                                                {
+                                                                                                                                    "StartAt": "ProcessDetectToxicContent",
+                                                                                                                                    "States": {
+                                                                                                                                        "ProcessDetectToxicContent": {
+                                                                                                                                            "Type": "Pass",
+                                                                                                                                            "End": true
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "StartAt": "ProcessDetectToxicContentLabels",
+                                                                                                                                    "States": {
+                                                                                                                                        "ProcessDetectToxicContentLabels": {
+                                                                                                                                            "Type": "Map",
+                                                                                                                                            "ItemProcessor": {
+                                                                                                                                                "ProcessorConfig": {
+                                                                                                                                                    "Mode": "INLINE"
+                                                                                                                                                },
+                                                                                                                                                "StartAt": "ProcessDetectToxicContentLabel",
+                                                                                                                                                "States": {
+                                                                                                                                                    "ProcessDetectToxicContentLabel": {
+                                                                                                                                                        "Type": "Pass",
+                                                                                                                                                        "End": true
+                                                                                                                                                    }
+                                                                                                                                                }
+                                                                                                                                            },
+                                                                                                                                            "End": true,
+                                                                                                                                            "ItemsPath": "$.labels",
+                                                                                                                                            "ItemSelector": {
+                                                                                                                                                "index.$": "$$.Map.Item.Index",
+                                                                                                                                                "name.$": "$$.Map.Item.Value.Name",
+                                                                                                                                                "score.$": "$$.Map.Item.Value.Score"
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            ],
+                                                                                                                            "End": true,
+                                                                                                                            "ResultSelector": {
+                                                                                                                                "index.$": "$[0].index",
+                                                                                                                                "labels.$": "$[1]",
+                                                                                                                                "toxicity.$": "$[0].toxicity"
+                                                                                                                            }
                                                                                                                         }
                                                                                                                     }
                                                                                                                 },
                                                                                                                 "End": true,
-                                                                                                                "ItemsPath": "$.ResultList"
+                                                                                                                "ItemsPath": "$.ResultList",
+                                                                                                                "ItemSelector": {
+                                                                                                                    "index.$": "$$.Map.Item.Index",
+                                                                                                                    "labels.$": "$$.Map.Item.Value.Labels",
+                                                                                                                    "toxicity.$": "$$.Map.Item.Value.Toxicity"
+                                                                                                                }
                                                                                                             }
                                                                                                         }
                                                                                                     }
