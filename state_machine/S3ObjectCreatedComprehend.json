@@ -141,7 +141,19 @@
                                                                                         "PutObjectComprehendEntity": {
                                                                                             "Type": "Task",
                                                                                             "Parameters": {
-                                                                                                "Body.$": "$.entity",
+                                                                                                "Body": {
+                                                                                                    "begin_offset.$": "$.entity.beginOffset",
+                                                                                                    "comprehend_id.$": "$.entity.comprehendId",
+                                                                                                    "created_at.$": "$.entity.createdAt",
+                                                                                                    "end_offset.$": "$.entity.endOffset",
+                                                                                                    "id.$": "$.entity.id",
+                                                                                                    "index.$": "$.entity.index",
+                                                                                                    "language_code.$": "$.entity.languageCode",
+                                                                                                    "language_code_score.$": "$.entity.languageCodeScore",
+                                                                                                    "score.$": "$.entity.score",
+                                                                                                    "text.$": "$.entity.text",
+                                                                                                    "type.$": "$.entity.type"
+                                                                                                },
                                                                                                 "Bucket.$": "$.s3.bucket.name",
                                                                                                 "Key.$": "States.Format('${aws_s3_object_key}comprehend/entity/language_code={}/type={}/comprehend_id={}/{}.json', $.entity.languageCode, $.entity.type, $.entity.comprehendId, $.entity.id)"
                                                                                             },
@@ -186,7 +198,18 @@
                                                                                             "Type": "Task",
                                                                                             "End": true,
                                                                                             "Parameters": {
-                                                                                                "Body.$": "$.keyPhrase",
+                                                                                                "Body": {
+                                                                                                    "begin_offset.$": "$.keyPhrase.beginOffset",
+                                                                                                    "comprehend_id.$": "$.keyPhrase.comprehendId",
+                                                                                                    "created_at.$": "$.keyPhrase.createdAt",
+                                                                                                    "end_offset.$": "$.keyPhrase.endOffset",
+                                                                                                    "id.$": "$.keyPhrase.id",
+                                                                                                    "index.$": "$.keyPhrase.index",
+                                                                                                    "language_code.$": "$.keyPhrase.languageCode",
+                                                                                                    "language_code_score.$": "$.keyPhrase.languageCodeScore",
+                                                                                                    "score.$": "$.keyPhrase.score",
+                                                                                                    "text.$": "$.keyPhrase.text"
+                                                                                                },
                                                                                                 "Bucket.$": "$.s3.bucket.name",
                                                                                                 "Key.$": "States.Format('${aws_s3_object_key}comprehend/key_phrase/language_code={}/comprehend_id={}/{}.json', $.keyPhrase.languageCode, $.keyPhrase.comprehendId, $.keyPhrase.id)"
                                                                                             },
@@ -228,7 +251,18 @@
                                                                                         "PutObjectComprehendPiiEntity": {
                                                                                             "Type": "Task",
                                                                                             "Parameters": {
-                                                                                                "Body.$": "$.piiEntity",
+                                                                                                "Body": {
+                                                                                                    "begin_offset.$": "$.piiEntity.beginOffset",
+                                                                                                    "comprehend_id.$": "$.piiEntity.comprehendId",
+                                                                                                    "created_at.$": "$.piiEntity.createdAt",
+                                                                                                    "end_offset.$": "$.piiEntity.endOffset",
+                                                                                                    "id.$": "$.piiEntity.id",
+                                                                                                    "index.$": "$.piiEntity.index",
+                                                                                                    "language_code.$": "$.piiEntity.languageCode",
+                                                                                                    "language_code_score.$": "$.piiEntity.languageCodeScore",
+                                                                                                    "score.$": "$.piiEntity.score",
+                                                                                                    "type.$": "$.piiEntity.type"
+                                                                                                },
                                                                                                 "Bucket.$": "$.s3.bucket.name",
                                                                                                 "Key.$": "States.Format('${aws_s3_object_key}comprehend/pii_entity/language_code={}/type={}/comprehend_id={}/{}.json', $.piiEntity.languageCode, $.piiEntity.type, $.piiEntity.comprehendId, $.piiEntity.id)"
                                                                                             },
@@ -272,10 +306,11 @@
                                                                                                 "End": true,
                                                                                                 "Parameters": {
                                                                                                     "Body": {
-                                                                                                        "comprehendId.$": "$.sentiment.comprehendId",
+                                                                                                        "comprehend_id.$": "$.sentiment.comprehendId",
+                                                                                                        "createdAt.$": "$.sentiment.createdAt",
                                                                                                         "id.$": "$.sentiment.id",
-                                                                                                        "languageCode.$": "$.sentiment.languageCode",
-                                                                                                        "languageCodeScore.$": "$.sentiment.languageCodeScore",
+                                                                                                        "language_code.$": "$.sentiment.languageCode",
+                                                                                                        "language_code_score.$": "$.sentiment.languageCodeScore",
                                                                                                         "sentiment.$": "$.sentiment.sentiment"
                                                                                                     },
                                                                                                     "Bucket.$": "$.s3.bucket.name",
@@ -293,15 +328,16 @@
                                                                                                 "End": true,
                                                                                                 "Parameters": {
                                                                                                     "Body": {
-                                                                                                        "comprehendId.$": "$.sentiment.comprehendId",
+                                                                                                        "comprehend_id.$": "$.sentiment.comprehendId",
+                                                                                                        "createdAt.$": "$.sentiment.createdAt",
                                                                                                         "id.$": "$.sentiment.sentimentScore.id",
-                                                                                                        "languageCode.$": "$.sentiment.languageCode",
-                                                                                                        "languageCodeScore.$": "$.sentiment.languageCodeScore",
+                                                                                                        "language_code.$": "$.sentiment.languageCode",
+                                                                                                        "language_code_score.$": "$.sentiment.languageCodeScore",
                                                                                                         "mixed.$": "$.sentiment.sentimentScore.mixed",
                                                                                                         "negative.$": "$.sentiment.sentimentScore.negative",
                                                                                                         "neutral.$": "$.sentiment.sentimentScore.neutral",
                                                                                                         "positive.$": "$.sentiment.sentimentScore.positive",
-                                                                                                        "sentimentId.$": "$.sentiment.id"
+                                                                                                        "sentiment_id.$": "$.sentiment.id"
                                                                                                     },
                                                                                                     "Bucket.$": "$.s3.bucket.name",
                                                                                                     "Key.$": "States.Format('${aws_s3_object_key}comprehend/sentiment_score/language_code={}/sentiment_id={}/comprehend_id={}/{}.json', $.sentiment.languageCode, $.sentiment.id, $.sentiment.comprehendId, $.sentiment.sentimentScore.id)"
@@ -315,6 +351,7 @@
                                                                                     "s3.$": "$.s3",
                                                                                     "sentiment": {
                                                                                         "comprehendId.$": "$.comprehend.id",
+                                                                                        "createdAt.$": "$.createdAt",
                                                                                         "id.$": "States.Hash($.comprehend.sentiment, 'MD5')",
                                                                                         "languageCode.$": "$.comprehend.languageCode",
                                                                                         "languageCodeScore.$": "$.comprehend.languageCodeScore",
@@ -354,15 +391,16 @@
                                                                                                             "End": true,
                                                                                                             "Parameters": {
                                                                                                                 "Body": {
-                                                                                                                    "beginOffset.$": "$.syntaxToken.beginOffset",
-                                                                                                                    "comprehendId.$": "$.syntaxToken.comprehendId",
-                                                                                                                    "endOffset.$": "$.syntaxToken.endOffset",
+                                                                                                                    "begin_offset.$": "$.syntaxToken.beginOffset",
+                                                                                                                    "comprehend_id.$": "$.syntaxToken.comprehendId",
+                                                                                                                    "createdAt.$": "$.syntaxToken.createdAt",
+                                                                                                                    "end_offset.$": "$.syntaxToken.endOffset",
                                                                                                                     "index.$": "$.syntaxToken.index",
                                                                                                                     "id.$": "$.syntaxToken.id",
-                                                                                                                    "languageCode.$": "$.syntaxToken.languageCode",
-                                                                                                                    "languageCodeScore.$": "$.syntaxToken.languageCodeScore",
+                                                                                                                    "language_code.$": "$.syntaxToken.languageCode",
+                                                                                                                    "language_code_score.$": "$.syntaxToken.languageCodeScore",
                                                                                                                     "text.$": "$.syntaxToken.text",
-                                                                                                                    "tokenId.$": "$.syntaxToken.tokenId"
+                                                                                                                    "token_id.$": "$.syntaxToken.tokenId"
                                                                                                                 },
                                                                                                                 "Bucket.$": "$.s3.bucket.name",
                                                                                                                 "Key.$": "States.Format('${aws_s3_object_key}comprehend/syntax_token/language_code={}/token_id={}/comprehend_id={}/{}.json', $.syntaxToken.languageCode, $.syntaxToken.tokenId, $.syntaxToken.comprehendId, $.syntaxToken.id)"
@@ -379,12 +417,13 @@
                                                                                                             "End": true,
                                                                                                             "Parameters": {
                                                                                                                 "Body": {
-                                                                                                                    "comprehendId.$": "$.syntaxToken.comprehendId",
+                                                                                                                    "comprehend_id.$": "$.syntaxToken.comprehendId",
+                                                                                                                    "created_at.$": "$.syntaxToken.createdAt",
                                                                                                                     "id.$": "$.syntaxToken.partOfSpeech.id",
-                                                                                                                    "languageCode.$": "$.syntaxToken.languageCode",
-                                                                                                                    "languageCodeScore.$": "$.syntaxToken.languageCodeScore",
+                                                                                                                    "language_code.$": "$.syntaxToken.languageCode",
+                                                                                                                    "language_code_score.$": "$.syntaxToken.languageCodeScore",
                                                                                                                     "score.$": "$.syntaxToken.partOfSpeech.score",
-                                                                                                                    "syntaxTokenId.$": "$.syntaxToken.id",
+                                                                                                                    "syntax_token_id.$": "$.syntaxToken.id",
                                                                                                                     "tag.$": "$.syntaxToken.partOfSpeech.tag"
                                                                                                                 },
                                                                                                                 "Bucket.$": "$.s3.bucket.name",
@@ -404,6 +443,7 @@
                                                                                     "syntaxToken": {
                                                                                         "beginOffset.$": "$$.Map.Item.Value.beginOffset",
                                                                                         "comprehendId.$": "$.comprehend.id",
+                                                                                        "createdAt.$": "$.createdAt",
                                                                                         "endOffset.$": "$$.Map.Item.Value.endOffset",
                                                                                         "index.$": "$$.Map.Item.Value.index",
                                                                                         "id.$": "States.Hash($$.Map.Item.Value, 'MD5')",
@@ -445,11 +485,12 @@
                                                                                                             "End": true,
                                                                                                             "Parameters": {
                                                                                                                 "Body": {
-                                                                                                                    "comprehendId.$": "$.targetedSentiment.comprehendId",
+                                                                                                                    "comprehend_id.$": "$.targetedSentiment.comprehendId",
+                                                                                                                    "created_at.$": "$.targetedSentiment.createdAt",
                                                                                                                     "id.$": "$.targetedSentiment.id",
                                                                                                                     "index.$": "$.targetedSentiment.index",
-                                                                                                                    "languageCode.$": "$.targetedSentiment.languageCode",
-                                                                                                                    "languageCodeScore.$": "$.targetedSentiment.languageCodeScore"
+                                                                                                                    "language_code.$": "$.targetedSentiment.languageCode",
+                                                                                                                    "language_code_score.$": "$.targetedSentiment.languageCodeScore"
                                                                                                                 },
                                                                                                                 "Bucket.$": "$.s3.bucket.name",
                                                                                                                 "Key.$": "States.Format('${aws_s3_object_key}comprehend/targeted_sentiment/language_code={}/comprehend_id={}/{}.json', $.targetedSentiment.languageCode, $.targetedSentiment.comprehendId, $.targetedSentiment.id)"
@@ -473,7 +514,16 @@
                                                                                                                         "Type": "Task",
                                                                                                                         "End": true,
                                                                                                                         "Parameters": {
-                                                                                                                            "Body.$": "$.descriptiveMentionIndex",
+                                                                                                                            "Body": {
+                                                                                                                                "comprehend_id.$": "$.descriptiveMentionIndex.comprehendId",
+                                                                                                                                "created_at.$": "$.descriptiveMentionIndex.createdAt",
+                                                                                                                                "id.$": "$.descriptiveMentionIndex.id",
+                                                                                                                                "index.$": "$.descriptiveMentionIndex.index",
+                                                                                                                                "language_code.$": "$.descriptiveMentionIndex.languageCode",
+                                                                                                                                "language_code_score.$": "$.descriptiveMentionIndex.languageCodeScore",
+                                                                                                                                "targeted_sentiment_id.$": "$.descriptiveMentionIndex.targetedSentimentId",
+                                                                                                                                "value.$": "$.descriptiveMentionIndex.value"
+                                                                                                                            },
                                                                                                                             "Bucket.$": "$.s3.bucket.name",
                                                                                                                             "Key.$": "States.Format('${aws_s3_object_key}comprehend/targeted_sentiment_descriptive_mention/language_code={}/targeted_sentiment_id={}/comprehend_id={}/{}.json', $.descriptiveMentionIndex.languageCode, $.descriptiveMentionIndex.targetedSentimentId, $.descriptiveMentionIndex.comprehendId, $.descriptiveMentionIndex.id)"
                                                                                                                         },
@@ -486,6 +536,7 @@
                                                                                                             "ItemSelector": {
                                                                                                                 "descriptiveMentionIndex": {
                                                                                                                     "comprehendId.$": "$.targetedSentiment.id",
+                                                                                                                    "createdAt.$": "$.targetedSentiment.createdAt",
                                                                                                                     "id.$": "States.Hash($$.Map.Item.Value, 'MD5')",
                                                                                                                     "index.$": "$$.Map.Item.Value.index",
                                                                                                                     "languageCode.$": "$.targetedSentiment.languageCode",
@@ -521,16 +572,17 @@
                                                                                                                                         "End": true,
                                                                                                                                         "Parameters": {
                                                                                                                                             "Body": {
-                                                                                                                                                "beginOffset.$": "$.mention.beginOffset",
-                                                                                                                                                "comprehendId.$": "$.mention.comprehendId",
-                                                                                                                                                "endOffset.$": "$.mention.endOffset",
-                                                                                                                                                "groupScore.$": "$.mention.groupScore",
+                                                                                                                                                "begin_offset.$": "$.mention.beginOffset",
+                                                                                                                                                "comprehend_id.$": "$.mention.comprehendId",
+                                                                                                                                                "created_at.$": "$.mention.createdAt",
+                                                                                                                                                "end_offset.$": "$.mention.endOffset",
+                                                                                                                                                "group_score.$": "$.mention.groupScore",
                                                                                                                                                 "id.$": "$.mention.id",
                                                                                                                                                 "index.$": "$.mention.index",
-                                                                                                                                                "languageCode.$": "$.mention.languageCode",
-                                                                                                                                                "languageCodeScore.$": "$.mention.languageCodeScore",
+                                                                                                                                                "language_code.$": "$.mention.languageCode",
+                                                                                                                                                "language_code_score.$": "$.mention.languageCodeScore",
                                                                                                                                                 "score.$": "$.mention.score",
-                                                                                                                                                "targetedSentimentId.$": "$.mention.targetedSentimentId",
+                                                                                                                                                "targeted_sentiment_id.$": "$.mention.targetedSentimentId",
                                                                                                                                                 "text.$": "$.mention.text",
                                                                                                                                                 "type.$": "$.mention.type"
                                                                                                                                             },
@@ -549,11 +601,12 @@
                                                                                                                                         "End": true,
                                                                                                                                         "Parameters": {
                                                                                                                                             "Body": {
-                                                                                                                                                "comprehendId.$": "$.mention.comprehendId",
+                                                                                                                                                "comprehend_id.$": "$.mention.comprehendId",
+                                                                                                                                                "created_at.$": "$.mention.createdAt",
                                                                                                                                                 "id.$": "$.mention.mentionSentiment.id",
-                                                                                                                                                "languageCode.$": "$.mention.languageCode",
-                                                                                                                                                "languageCodeScore.$": "$.mention.languageCodeScore",
-                                                                                                                                                "targetedSentimentMentionId.$": "$.mention.id",
+                                                                                                                                                "language_code.$": "$.mention.languageCode",
+                                                                                                                                                "language_code_score.$": "$.mention.languageCodeScore",
+                                                                                                                                                "targeted_sentiment_mention_id.$": "$.mention.id",
                                                                                                                                                 "sentiment.$": "$.mention.mentionSentiment.sentiment"
                                                                                                                                             },
                                                                                                                                             "Bucket.$": "$.s3.bucket.name",
@@ -571,16 +624,17 @@
                                                                                                                                         "End": true,
                                                                                                                                         "Parameters": {
                                                                                                                                             "Body": {
-                                                                                                                                                "comprehendId.$": "$.mention.comprehendId",
+                                                                                                                                                "comprehend_id.$": "$.mention.comprehendId",
+                                                                                                                                                "created_at.$": "$.mention.createdAt",
                                                                                                                                                 "id.$": "$.mention.mentionSentiment.sentimentScore.id",
-                                                                                                                                                "languageCode.$": "$.mention.languageCode",
-                                                                                                                                                "languageCodeScore.$": "$.mention.languageCodeScore",
+                                                                                                                                                "language_code.$": "$.mention.languageCode",
+                                                                                                                                                "language_code_score.$": "$.mention.languageCodeScore",
                                                                                                                                                 "negative.$": "$.mention.mentionSentiment.sentimentScore.negative",
                                                                                                                                                 "neutral.$": "$.mention.mentionSentiment.sentimentScore.neutral",
                                                                                                                                                 "mixed.$": "$.mention.mentionSentiment.sentimentScore.mixed",
                                                                                                                                                 "positive.$": "$.mention.mentionSentiment.sentimentScore.positive",
-                                                                                                                                                "targetedSentimentId.$": "$.mention.targetedSentimentId",
-                                                                                                                                                "targetedSentimentMentionSentimentId.$": "$.mention.mentionSentiment.id"
+                                                                                                                                                "targeted_sentiment_id.$": "$.mention.targetedSentimentId",
+                                                                                                                                                "targeted_sentiment_mention_sentiment_id.$": "$.mention.mentionSentiment.id"
                                                                                                                                             },
                                                                                                                                             "Bucket.$": "$.s3.bucket.name",
                                                                                                                                             "Key.$": "States.Format('${aws_s3_object_key}comprehend/targeted_sentiment_mention_sentiment_score/language_code={}/targeted_sentiment_mention_sentiment_id={}/targeted_sentiment_mention_id={}/targeted_sentiment_id={}/comprehend_id={}/{}.json', $.mention.languageCode, $.mention.mentionSentiment.id, $.mention.id, $.mention.targetedSentimentId, $.mention.comprehendId, $.mention.mentionSentiment.sentimentScore.id)"
@@ -599,6 +653,7 @@
                                                                                                                 "mention": {
                                                                                                                     "beginOffset.$": "$$.Map.Item.Value.beginOffset",
                                                                                                                     "comprehendId.$": "$.targetedSentiment.id",
+                                                                                                                    "createdAt.$": "$.targetedSentiment.createdAt",
                                                                                                                     "endOffset.$": "$$.Map.Item.Value.endOffset",
                                                                                                                     "groupScore.$": "$$.Map.Item.Value.groupScore",
                                                                                                                     "id.$": "States.Hash($$.Map.Item.Value, 'MD5')",
@@ -636,6 +691,7 @@
                                                                                     "s3.$": "$.s3",
                                                                                     "targetedSentiment": {
                                                                                         "comprehendId.$": "$.comprehend.id",
+                                                                                        "createdAt.$": "$.createdAt",
                                                                                         "descriptiveMentionIndex.$": "$$.Map.Item.Value.descriptiveMentionIndex",
                                                                                         "index.$": "$$.Map.Item.Value.index",
                                                                                         "id.$": "States.Hash($$.Map.Item.Value, 'MD5')",
@@ -670,11 +726,12 @@
                                                                                                             "End": true,
                                                                                                             "Parameters": {
                                                                                                                 "Body": {
-                                                                                                                    "comprehendId.$": "$.toxicContent.comprehendId",
+                                                                                                                    "comprehend_id.$": "$.toxicContent.comprehendId",
+                                                                                                                    "created_at.$": "$.toxicContent.createdAt",
                                                                                                                     "id.$": "$.toxicContent.id",
                                                                                                                     "index.$": "$.toxicContent.index",
-                                                                                                                    "languageCode.$": "$.toxicContent.languageCode",
-                                                                                                                    "languageCodeScore.$": "$.toxicContent.languageCodeScore",
+                                                                                                                    "language_code.$": "$.toxicContent.languageCode",
+                                                                                                                    "language_code_score.$": "$.toxicContent.languageCodeScore",
                                                                                                                     "toxicity.$": "$.toxicContent.toxicity"
                                                                                                                 },
                                                                                                                 "Bucket.$": "$.s3.bucket.name",
@@ -699,7 +756,17 @@
                                                                                                                         "Type": "Task",
                                                                                                                         "End": true,
                                                                                                                         "Parameters": {
-                                                                                                                            "Body.$": "$.label",
+                                                                                                                            "Body": {
+                                                                                                                                "comprehend_id.$": "$.label.comprehendId",
+                                                                                                                                "created_at.$": "$.label.createdAt",
+                                                                                                                                "id.$": "$.label.id",
+                                                                                                                                "index.$": "$.label.index",
+                                                                                                                                "language_code.$": "$.label.languageCode",
+                                                                                                                                "language_code_score.$": "$.label.languageCodeScore",
+                                                                                                                                "name.$": "$.label.name",
+                                                                                                                                "score.$": "$.label.score",
+                                                                                                                                "toxic_content_id.$": "$.label.toxicContentId"
+                                                                                                                            },
                                                                                                                             "Bucket.$": "$.s3.bucket.name",
                                                                                                                             "Key.$": "States.Format('${aws_s3_object_key}comprehend/toxic_content_label/language_code={}/name={}/toxic_content_id={}/comprehend_id={}/{}.json', $.label.languageCode, $.label.name, $.label.toxicContentId, $.label.comprehendId, $.label.id)"
                                                                                                                         },
@@ -712,6 +779,7 @@
                                                                                                             "ItemSelector": {
                                                                                                                 "label": {
                                                                                                                     "comprehendId.$": "$.toxicContent.comprehendId",
+                                                                                                                    "createdAt.$": "$.toxicContent.createdAt",
                                                                                                                     "id.$": "States.Hash($$.Map.Item.Value, 'MD5')",
                                                                                                                     "index.$": "$$.Map.Item.Value.index",
                                                                                                                     "languageCode.$": "$.toxicContent.languageCode",
@@ -735,6 +803,7 @@
                                                                                     "s3.$": "$.s3",
                                                                                     "toxicContent": {
                                                                                         "comprehendId.$": "$.comprehend.id",
+                                                                                        "createdAt.$": "$.createdAt",
                                                                                         "index.$": "$$.Map.Item.Value.index",
                                                                                         "id.$": "States.Hash($$.Map.Item.Value, 'MD5')",
                                                                                         "languageCode.$": "$.comprehend.languageCode",
