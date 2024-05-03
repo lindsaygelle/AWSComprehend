@@ -1,8 +1,60 @@
 # AWS Comprehend
-This project provides an event-driven architecture for analyzing user-submitted text using AWS Comprehend and exposing the processed data through a RESTful API gateway.
-Users can submit a block of text, and the system will store the raw text in S3, process it using AWS Comprehend, store the analyzed data in DynamoDB, and then expose the data sets through the provided API Gateway endpoints.
-The infrastructure is hosted on AWS, leveraging various services to create a scalable and serverless solution.
+This project provides an event-driven architecture for analyzing user-submitted text using the powerful natural language processing capabilities of AWS Comprehend. It exposes the processed data through a normalized data lake, empowering users to derive valuable insights from their textual data. Users can effortlessly submit blocks of text, and the system will securely store the raw text in Amazon S3, leveraging its scalability and durability. The real magic happens when AWS Comprehend, a sophisticated machine learning service, works its magic on the text, performing a comprehensive suite of natural language processing tasks.
 
+## Pipeline
+This project is a serverless data processing pipeline built on AWS using Terraform. It performs natural language processing and analysis on text files uploaded to an S3 bucket, exposing various insights provided by the AWS Comprehend API.
+
+## Overview
+The pipeline consists of the following components:
+
+1. **S3 Bucket**: A designated S3 bucket with a `/text/` partition for storing the input text files, providing a secure and scalable repository for user submissions.
+2. **S3 Notification**: When a new file is uploaded to the `/text/` partition, an S3 notification is triggered, initiating the text analysis journey.
+3. **SQS Queue**: The S3 notification sends a message to an SQS queue, ensuring efficient and reliable message delivery.
+4. **Step Function (Comprehend)**: The SQS queue triggers the first Step Function, orchestrating the initial text processing workflow.
+5. **AWS Comprehend**: The Step Function invokes AWS Comprehend, leveraging its advanced natural language processing capabilities to extract valuable insights from the text. This includes language detection, entity recognition, key phrase extraction, personally identifiable information (PII) detection, sentiment analysis, syntax analysis, targeted sentiment analysis, and toxic content detection.
+6. **S3 Output**: The analysis results are securely stored in an S3 bucket under the `/comprehend/` partition, ensuring easy access and retrieval.
+7. **S3 Notification**: When a new file is written to the `/comprehend/` partition, another S3 notification is triggered, initiating the next phase of the pipeline.
+8. **SQS Queue**: The S3 notification sends a message to a second SQS queue, facilitating seamless communication between pipeline stages.
+9. **Step Function (Datalake)**: The second SQS queue triggers the second Step Function, responsible for organizing and partitioning the Comprehend analysis results.
+10. **S3 Output**: The partitioned data is stored in the S3 bucket under the `/datalake/comprehend` partition, creating a structured and accessible data lake for further analysis and exploration.
+
+# AWS Resources
+The following AWS resources are utilized in this project:
+
+<table>
+  <thead>
+    <tr>
+      <th>AWS Resource</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Amazon S3</td>
+      <td>Object storage service for storing input text files and processed data.</td>
+    </tr>
+    <tr>
+      <td>Amazon SQS</td>
+      <td>Fully managed message queuing service for reliable communication between components.</td>
+    </tr>
+    <tr>
+      <td>AWS Step Functions</td>
+      <td>Serverless orchestration service for coordinating the various steps in the pipeline.</td>
+    </tr>
+    <tr>
+      <td>AWS Comprehend</td>
+      <td>Natural language processing service for analyzing text data and extracting insights.</td>
+    </tr>
+    <tr>
+      <td>AWS Glue</td>
+      <td>Fully managed extract, transform, and load (ETL) service for preparing and loading data.</td>
+    </tr>
+    <tr>
+      <td>AWS Pipes</td>
+      <td>Continuous data movement service for efficiently transferring data between AWS services.</td>
+    </tr>
+  </tbody>
+</table>
 
 # Contributing
 Contributions to this [AWS Comprehend](https://www.github.com/lindsaygelle/AWSComprehend) are welcome! We appreciate any contributions,
