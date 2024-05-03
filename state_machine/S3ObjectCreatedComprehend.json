@@ -155,7 +155,7 @@
                                                                                                     "type.$": "$.entity.type"
                                                                                                 },
                                                                                                 "Bucket.$": "$.s3.bucket.name",
-                                                                                                "Key.$": "States.Format('${aws_s3_object_key}comprehend/entity/language_code={}/type={}/comprehend_id={}/{}.json', $.entity.languageCode, $.entity.type, $.entity.comprehendId, $.entity.id)"
+                                                                                                "Key.$": "States.Format('${aws_s3_object_key_entity}language={}/category={}/comprehend={}/{}.json', $.entity.languageCode, $.entity.type, $.entity.comprehendId, $.entity.id)"
                                                                                             },
                                                                                             "Resource": "arn:aws:states:::aws-sdk:s3:putObject",
                                                                                             "End": true
@@ -211,7 +211,7 @@
                                                                                                     "text.$": "$.keyPhrase.text"
                                                                                                 },
                                                                                                 "Bucket.$": "$.s3.bucket.name",
-                                                                                                "Key.$": "States.Format('${aws_s3_object_key}comprehend/key_phrase/language_code={}/comprehend_id={}/{}.json', $.keyPhrase.languageCode, $.keyPhrase.comprehendId, $.keyPhrase.id)"
+                                                                                                "Key.$": "States.Format('${aws_s3_object_key_key_phrase}language={}/comprehend={}/{}.json', $.keyPhrase.languageCode, $.keyPhrase.comprehendId, $.keyPhrase.id)"
                                                                                             },
                                                                                             "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
                                                                                         }
@@ -264,7 +264,7 @@
                                                                                                     "type.$": "$.piiEntity.type"
                                                                                                 },
                                                                                                 "Bucket.$": "$.s3.bucket.name",
-                                                                                                "Key.$": "States.Format('${aws_s3_object_key}comprehend/pii_entity/language_code={}/type={}/comprehend_id={}/{}.json', $.piiEntity.languageCode, $.piiEntity.type, $.piiEntity.comprehendId, $.piiEntity.id)"
+                                                                                                "Key.$": "States.Format('${aws_s3_object_key_pii_entity}language={}/category={}/comprehend={}/{}.json', $.piiEntity.languageCode, $.piiEntity.type, $.piiEntity.comprehendId, $.piiEntity.id)"
                                                                                             },
                                                                                             "Resource": "arn:aws:states:::aws-sdk:s3:putObject",
                                                                                             "End": true
@@ -314,7 +314,7 @@
                                                                                                         "sentiment.$": "$.sentiment.sentiment"
                                                                                                     },
                                                                                                     "Bucket.$": "$.s3.bucket.name",
-                                                                                                    "Key.$": "States.Format('${aws_s3_object_key}comprehend/sentiment/language_code={}/sentiment={}/comprehend_id={}/{}.json', $.sentiment.languageCode, $.sentiment.sentiment, $.sentiment.comprehendId, $.sentiment.id)"
+                                                                                                    "Key.$": "States.Format('${aws_s3_object_key_sentiment}language={}/category={}/comprehend={}/{}.json', $.sentiment.languageCode, $.sentiment.sentiment, $.sentiment.comprehendId, $.sentiment.id)"
                                                                                                 },
                                                                                                 "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
                                                                                             }
@@ -340,7 +340,7 @@
                                                                                                         "sentiment_id.$": "$.sentiment.id"
                                                                                                     },
                                                                                                     "Bucket.$": "$.s3.bucket.name",
-                                                                                                    "Key.$": "States.Format('${aws_s3_object_key}comprehend/sentiment_score/language_code={}/sentiment_id={}/comprehend_id={}/{}.json', $.sentiment.languageCode, $.sentiment.id, $.sentiment.comprehendId, $.sentiment.sentimentScore.id)"
+                                                                                                    "Key.$": "States.Format('${aws_s3_object_key_sentiment_score}language={}/sentiment={}/comprehend={}/{}.json', $.sentiment.languageCode, $.sentiment.id, $.sentiment.comprehendId, $.sentiment.sentimentScore.id)"
                                                                                                 },
                                                                                                 "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
                                                                                             }
@@ -403,7 +403,7 @@
                                                                                                                     "token_id.$": "$.syntaxToken.tokenId"
                                                                                                                 },
                                                                                                                 "Bucket.$": "$.s3.bucket.name",
-                                                                                                                "Key.$": "States.Format('${aws_s3_object_key}comprehend/syntax_token/language_code={}/token_id={}/comprehend_id={}/{}.json', $.syntaxToken.languageCode, $.syntaxToken.tokenId, $.syntaxToken.comprehendId, $.syntaxToken.id)"
+                                                                                                                "Key.$": "States.Format('${aws_s3_object_key_syntax_token}language={}/token={}/comprehend={}/{}.json', $.syntaxToken.languageCode, $.syntaxToken.tokenId, $.syntaxToken.comprehendId, $.syntaxToken.id)"
                                                                                                             },
                                                                                                             "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
                                                                                                         }
@@ -427,7 +427,7 @@
                                                                                                                     "tag.$": "$.syntaxToken.partOfSpeech.tag"
                                                                                                                 },
                                                                                                                 "Bucket.$": "$.s3.bucket.name",
-                                                                                                                "Key.$": "States.Format('${aws_s3_object_key}comprehend/syntax_token_part_of_speech/language_code={}/tag={}/syntax_token_id={}/comprehend_id={}/{}.json', $.syntaxToken.languageCode, $.syntaxToken.partOfSpeech.tag, $.syntaxToken.id, $.syntaxToken.comprehendId, $.syntaxToken.partOfSpeech.id)"
+                                                                                                                "Key.$": "States.Format('${aws_s3_object_key_syntax_token_part_of_speech}language={}/category={}/syntax_token={}/comprehend={}/{}.json', $.syntaxToken.languageCode, $.syntaxToken.partOfSpeech.tag, $.syntaxToken.id, $.syntaxToken.comprehendId, $.syntaxToken.partOfSpeech.id)"
                                                                                                             },
                                                                                                             "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
                                                                                                         }
@@ -493,7 +493,7 @@
                                                                                                                     "language_code_score.$": "$.targetedSentiment.languageCodeScore"
                                                                                                                 },
                                                                                                                 "Bucket.$": "$.s3.bucket.name",
-                                                                                                                "Key.$": "States.Format('${aws_s3_object_key}comprehend/targeted_sentiment/language_code={}/comprehend_id={}/{}.json', $.targetedSentiment.languageCode, $.targetedSentiment.comprehendId, $.targetedSentiment.id)"
+                                                                                                                "Key.$": "States.Format('${aws_s3_object_key_targeted_sentiment}language={}/comprehend={}/{}.json', $.targetedSentiment.languageCode, $.targetedSentiment.comprehendId, $.targetedSentiment.id)"
                                                                                                             },
                                                                                                             "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
                                                                                                         }
@@ -525,7 +525,7 @@
                                                                                                                                 "value.$": "$.descriptiveMentionIndex.value"
                                                                                                                             },
                                                                                                                             "Bucket.$": "$.s3.bucket.name",
-                                                                                                                            "Key.$": "States.Format('${aws_s3_object_key}comprehend/targeted_sentiment_descriptive_mention/language_code={}/targeted_sentiment_id={}/comprehend_id={}/{}.json', $.descriptiveMentionIndex.languageCode, $.descriptiveMentionIndex.targetedSentimentId, $.descriptiveMentionIndex.comprehendId, $.descriptiveMentionIndex.id)"
+                                                                                                                            "Key.$": "States.Format('${aws_s3_object_key_targeted_sentiment_descriptive_mention}language={}/targeted_sentiment={}/comprehend={}/{}.json', $.descriptiveMentionIndex.languageCode, $.descriptiveMentionIndex.targetedSentimentId, $.descriptiveMentionIndex.comprehendId, $.descriptiveMentionIndex.id)"
                                                                                                                         },
                                                                                                                         "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
                                                                                                                     }
@@ -587,7 +587,7 @@
                                                                                                                                                 "type.$": "$.mention.type"
                                                                                                                                             },
                                                                                                                                             "Bucket.$": "$.s3.bucket.name",
-                                                                                                                                            "Key.$": "States.Format('${aws_s3_object_key}comprehend/targeted_sentiment_mention/language_code={}/type={}/targeted_sentiment_id={}/comprehend_id={}/{}.json', $.mention.languageCode, $.mention.type, $.mention.targetedSentimentId, $.mention.comprehendId, $.mention.id)"
+                                                                                                                                            "Key.$": "States.Format('${aws_s3_object_key_targeted_sentiment_mention}language={}/category={}/targeted_sentiment={}/comprehend={}/{}.json', $.mention.languageCode, $.mention.type, $.mention.targetedSentimentId, $.mention.comprehendId, $.mention.id)"
                                                                                                                                         },
                                                                                                                                         "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
                                                                                                                                     }
@@ -610,7 +610,7 @@
                                                                                                                                                 "sentiment.$": "$.mention.mentionSentiment.sentiment"
                                                                                                                                             },
                                                                                                                                             "Bucket.$": "$.s3.bucket.name",
-                                                                                                                                            "Key.$": "States.Format('${aws_s3_object_key}comprehend/targeted_sentiment_mention_sentiment/language_code={}/sentiment={}/targeted_sentiment_mention_id={}/targeted_sentiment_id={}/comprehend_id={}/{}.json', $.mention.languageCode, $.mention.mentionSentiment.sentiment, $.mention.id, $.mention.targetedSentimentId, $.mention.comprehendId, $.mention.mentionSentiment.id)"
+                                                                                                                                            "Key.$": "States.Format('${aws_s3_object_key_targeted_sentiment_mention_sentiment}language={}/category={}/targeted_sentiment_mention={}/targeted_sentiment={}/comprehend={}/{}.json', $.mention.languageCode, $.mention.mentionSentiment.sentiment, $.mention.id, $.mention.targetedSentimentId, $.mention.comprehendId, $.mention.mentionSentiment.id)"
                                                                                                                                         },
                                                                                                                                         "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
                                                                                                                                     }
@@ -637,7 +637,7 @@
                                                                                                                                                 "targeted_sentiment_mention_sentiment_id.$": "$.mention.mentionSentiment.id"
                                                                                                                                             },
                                                                                                                                             "Bucket.$": "$.s3.bucket.name",
-                                                                                                                                            "Key.$": "States.Format('${aws_s3_object_key}comprehend/targeted_sentiment_mention_sentiment_score/language_code={}/targeted_sentiment_mention_sentiment_id={}/targeted_sentiment_mention_id={}/targeted_sentiment_id={}/comprehend_id={}/{}.json', $.mention.languageCode, $.mention.mentionSentiment.id, $.mention.id, $.mention.targetedSentimentId, $.mention.comprehendId, $.mention.mentionSentiment.sentimentScore.id)"
+                                                                                                                                            "Key.$": "States.Format('${aws_s3_object_key_targeted_sentiment_mention_sentiment_score}language={}/targeted_sentiment_mention_sentiment={}/targeted_sentiment_mention={}/targeted_sentiment={}/comprehend={}/{}.json', $.mention.languageCode, $.mention.mentionSentiment.id, $.mention.id, $.mention.targetedSentimentId, $.mention.comprehendId, $.mention.mentionSentiment.sentimentScore.id)"
                                                                                                                                         },
                                                                                                                                         "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
                                                                                                                                     }
@@ -735,7 +735,7 @@
                                                                                                                     "toxicity.$": "$.toxicContent.toxicity"
                                                                                                                 },
                                                                                                                 "Bucket.$": "$.s3.bucket.name",
-                                                                                                                "Key.$": "States.Format('${aws_s3_object_key}comprehend/toxic_content/language_code={}/comprehend_id={}/{}.json', $.toxicContent.languageCode, $.toxicContent.comprehendId, $.toxicContent.id)"
+                                                                                                                "Key.$": "States.Format('${aws_s3_object_key_toxic_content}language={}/comprehend={}/{}.json', $.toxicContent.languageCode, $.toxicContent.comprehendId, $.toxicContent.id)"
                                                                                                             },
                                                                                                             "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
                                                                                                         }
@@ -768,7 +768,7 @@
                                                                                                                                 "toxic_content_id.$": "$.label.toxicContentId"
                                                                                                                             },
                                                                                                                             "Bucket.$": "$.s3.bucket.name",
-                                                                                                                            "Key.$": "States.Format('${aws_s3_object_key}comprehend/toxic_content_label/language_code={}/name={}/toxic_content_id={}/comprehend_id={}/{}.json', $.label.languageCode, $.label.name, $.label.toxicContentId, $.label.comprehendId, $.label.id)"
+                                                                                                                            "Key.$": "States.Format('${aws_s3_object_key_toxic_content_label}language={}/category={}/toxic_content={}/comprehend={}/{}.json', $.label.languageCode, $.label.name, $.label.toxicContentId, $.label.comprehendId, $.label.id)"
                                                                                                                         },
                                                                                                                         "Resource": "arn:aws:states:::aws-sdk:s3:putObject"
                                                                                                                     }
