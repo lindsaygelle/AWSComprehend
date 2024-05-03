@@ -1,4 +1,4 @@
-data "aws_iam_policy_document" "assume_role_glue_crawler_datalake" {
+data "aws_iam_policy_document" "assume_role_glue_crawler_datalake_comprehend" {
   statement {
     actions = [
       "sts:AssumeRole"
@@ -63,7 +63,7 @@ data "aws_iam_policy_document" "assume_role_sfn_state_machine_s3_object_created_
   }
 }
 
-data "aws_iam_policy_document" "glue_crawler_datalake" {
+data "aws_iam_policy_document" "glue_crawler_datalake_comprehend" {
   statement {
     actions = [
       "glue:GetDatabase",
@@ -110,7 +110,7 @@ data "aws_iam_policy_document" "glue_crawler_datalake" {
     ]
     effect = "Allow"
     resources = [
-      "${aws_s3_bucket.main.arn}/${aws_s3_object.datalake.key}*"
+      "${aws_s3_bucket.main.arn}/${aws_s3_object.datalake_comprehend.key}*"
     ]
   }
   statement {
