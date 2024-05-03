@@ -75,7 +75,7 @@ If you would like to contribute code changes, please follow these _basic steps_:
 
 Please ensure that your code adheres to the project's [coding standards and conventions](./CONTRIBUTING.md). Additionally, make sure to include tests for any new functionality or bug fixes.
 
-## Guidelines 
+## Guidelines
 Before starting any major contribution, please open an issue first to discuss your ideas and ensure they align with the project's goals and direction.
 This will help prevent duplicate effort and ensure that your contributions are more likely to be accepted.
 
