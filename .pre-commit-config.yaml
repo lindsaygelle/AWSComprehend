@@ -11,14 +11,14 @@ repos:
           (?x)^.*(\.yaml|\.yml)$
       - id: "detect-private-key"
       - id: "end-of-file-fixer"
-        exclude: ^\.idea/workspace\.xml$
+        exclude: ^(\.idea/workspace\.xml|.*\.svg)$
       - id: "debug-statements"
       - id: "mixed-line-ending"
-        exclude: ^\.idea/workspace\.xml$
+        exclude: ^(\.idea/workspace\.xml|.*\.svg)$
       - id: "no-commit-to-branch"
         args: [--branch, main]
       - id: "trailing-whitespace"
-        exclude: ^\.idea/workspace\.xml$
+        exclude: ^(\.idea/workspace\.xml|.*\.svg)$
   - repo: "https://github.com/codespell-project/codespell"
     rev: v2.1.0
     hooks:
