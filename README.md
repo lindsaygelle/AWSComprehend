@@ -1,9 +1,63 @@
 # AWS Comprehend 💻📚
 ![AWSComprehend](<https://repository-images.githubusercontent.com/787701450/5fad2776-840e-4da8-909d-8768e0ed118c>)
 
-This project provides a simple event-driven architecture for analyzing user-submitted text using the powerful natural language processing capabilities of AWS Comprehend. It exposes the processed data through a normalized data lake, empowering users to derive valuable insights from their textual data. Users can effortlessly submit blocks of text, and the system will securely store the raw text in Amazon S3, leveraging its scalability and durability. The real magic happens when AWS Comprehend, a sophisticated machine learning service, works its magic on the text, performing a comprehensive suite of natural language processing tasks.
+## Overview
+The AWS Comprehend project provides a serverless, event-driven architecture for analyzing user-submitted text using the powerful natural language processing capabilities of AWS Comprehend. It exposes the processed data through a normalized data lake, empowering users to derive valuable insights from their textual data. With this system, users can effortlessly submit blocks of text, which are securely stored in Amazon S3, leveraging its scalability and durability. The real magic happens when AWS Comprehend, a sophisticated machine learning service, performs a comprehensive suite of natural language processing tasks on the text, extracting insights and enriching the data.
 
-# Pipeline 🚚
+# Usage
+AWSComprehend is a project built with Amazon Web Services (AWS) that leverages various AWS services, including Amazon Comprehend, for natural language processing tasks. It uses Terraform, an infrastructure as code (IaC) tool, to manage the creation and integration of AWS resources.
+
+## Prerequisites
+To use this project, you need to have the following prerequisites set up:
+
+1. **AWS Account**: Create an Amazon Web Services account if you don't have one already.
+2. **Terraform Installation**: Download and install Terraform according to your system requirements. Terraform is an open-source tool that allows you to define and provision infrastructure resources using code.
+3. **AWS Credentials Configuration**: Configure your AWS credentials by following the AWS/Terraform requirements. This typically involves setting up an AWS Access Key and Secret Access Key, which will allow Terraform to interact with your AWS account.
+
+## Installation
+Once your development environment is configured with the prerequisites, you can deploy the project with the following steps:
+
+**Clone the Repository**
+
+Download the repository to your desired location by running the following command:
+```bash
+git clone https://github.com/lindsaygelle/AWSComprehend.git
+```
+
+**Navigate to the Project Directory**
+
+Change your current directory to the newly downloaded repository.
+```bash
+cd AWSComprehend
+```
+
+**Initialize Terraform**
+
+Initialize Terraform by running the following command, which will download the necessary provider plugins:
+```bash
+terraform init
+```
+
+**Review the Infrastructure Plan**
+
+Review the infrastructure changes that Terraform will make by executing the following command:
+```bash
+terraform plan
+```
+This will show you a preview of the resources that will be created, updated, or deleted.
+
+**Apply the Infrastructure Changes**
+
+Once you have reviewed the plan and are ready to apply the changes, run the following command:
+```bash
+terraform apply
+```
+
+This will prompt you to confirm the changes before proceeding with the deployment. Type yes to confirm and start the deployment process.
+
+After the deployment is complete, you should have the necessary AWS resources provisioned, including Amazon Comprehend and any other services required by the project.
+
+# Comprehend Pipeline 🚚
 This project is a serverless data processing pipeline built on AWS using Terraform. It performs natural language processing and analysis on text files uploaded to an S3 bucket, exposing various insights provided by the AWS Comprehend API.
 
 ## Overview
