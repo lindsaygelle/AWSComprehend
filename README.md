@@ -1,7 +1,6 @@
 # AWS Comprehend 💻📚
 ![AWSComprehend](<https://repository-images.githubusercontent.com/787701450/5fad2776-840e-4da8-909d-8768e0ed118c>)
 
-## Overview
 The AWS Comprehend project provides a serverless, event-driven architecture for analyzing user-submitted text using the powerful natural language processing capabilities of AWS Comprehend. It exposes the processed data through a normalized data lake, empowering users to derive valuable insights from their textual data. With this system, users can effortlessly submit blocks of text, which are securely stored in Amazon S3, leveraging its scalability and durability. The real magic happens when AWS Comprehend, a sophisticated machine learning service, performs a comprehensive suite of natural language processing tasks on the text, extracting insights and enriching the data.
 
 # Usage
